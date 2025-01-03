@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Reflection.Emit;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	/// <summary>
 	/// Internal class but due implementation restriction should be public
@@ -34,23 +32,9 @@ namespace Force.DeepCloner.Helpers
 
 		static ShallowObjectCloner()
 		{
-#if !NETCORE
-			_unsafeInstance = GenerateUnsafeCloner();
-			_instance = _unsafeInstance;
-			try
-			{
-				_instance.DoCloneObject(new object());
-			}
-			catch (Exception)
-			{
-				// switching to safe
-				_instance = new ShallowSafeObjectCloner();
-			}
-#else
 			_instance = new ShallowSafeObjectCloner();
 			// no unsafe variant for core
 			_unsafeInstance = _instance;
-#endif
 		}
 
 		/// <summary>
@@ -62,37 +46,6 @@ namespace Force.DeepCloner.Helpers
 			if (isSafe) _instance = new ShallowSafeObjectCloner();
 			else _instance = _unsafeInstance;
 		}
-
-#if !NETCORE
-		private static ShallowObjectCloner GenerateUnsafeCloner()
-		{
-			var mb = TypeCreationHelper.GetModuleBuilder();
-
-			var builder = mb.DefineType("ShallowSafeObjectClonerImpl", TypeAttributes.Public, typeof(ShallowObjectCloner));
-			var ctorBuilder = builder.DefineConstructor(MethodAttributes.Public, CallingConventions.HasThis | CallingConventions.HasThis, Type.EmptyTypes);
-
-			var cil = ctorBuilder.GetILGenerator();
-			cil.Emit(OpCodes.Ldarg_0);
-			// ReSharper disable AssignNullToNotNullAttribute
-			cil.Emit(OpCodes.Call, typeof(ShallowObjectCloner).GetPrivateConstructors()[0]);
-			// ReSharper restore AssignNullToNotNullAttribute
-			cil.Emit(OpCodes.Ret);
-
-			var methodBuilder = builder.DefineMethod(
-				"DoCloneObject",
-				MethodAttributes.Public | MethodAttributes.Virtual,
-				CallingConventions.HasThis,
-				typeof(object),
-				new[] { typeof(object) });
-
-			var il = methodBuilder.GetILGenerator();
-			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Call, typeof(object).GetPrivateMethod("MemberwiseClone"));
-			il.Emit(OpCodes.Ret);
-			var type = builder.CreateType();
-			return (ShallowObjectCloner)Activator.CreateInstance(type);
-		}
-#endif
 
 		private class ShallowSafeObjectCloner : ShallowObjectCloner
 		{

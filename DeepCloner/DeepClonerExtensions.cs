@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Security;
+using DeepCloner.Helpers;
 
-using Force.DeepCloner.Helpers;
-
-namespace Force.DeepCloner
+namespace DeepCloner
 {
 	/// <summary>
 	/// Extensions for object cloning
@@ -70,7 +69,7 @@ namespace Force.DeepCloner
 			{
 				return false;
 			}
-			
+
 			return true;
 		}
 	}

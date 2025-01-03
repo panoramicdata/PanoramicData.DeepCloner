@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class DeepClonerMsilHelper
 	{

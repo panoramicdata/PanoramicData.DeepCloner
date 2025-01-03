@@ -1,20 +1,18 @@
-﻿using System.Reflection;
+﻿using DeepCloner.Helpers;
+using System.Reflection;
 
-using Force.DeepCloner.Helpers;
+namespace DeepCloner.Test;
 
-namespace Force.DeepCloner.Tests
+public class BaseTest
 {
-	public class BaseTest
+	public BaseTest(bool isSafeInit)
 	{
-		public BaseTest(bool isSafeInit)
-		{
-			SwitchTo(isSafeInit);
-		}
+		SwitchTo(isSafeInit);
+	}
 
-		public static void SwitchTo(bool isSafeInit)
-		{
-			typeof(ShallowObjectCloner).GetMethod("SwitchTo", BindingFlags.NonPublic | BindingFlags.Static)
-									.Invoke(null, new object[] { isSafeInit });
-		}
+	public static void SwitchTo(bool isSafeInit)
+	{
+		typeof(ShallowObjectCloner).GetMethod("SwitchTo", BindingFlags.NonPublic | BindingFlags.Static)
+								.Invoke(null, [isSafeInit]);
 	}
 }

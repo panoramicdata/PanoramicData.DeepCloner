@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<VersionPrefix>1.0</VersionPrefix>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<AssemblyName>PanoramicData.DeepCloner</AssemblyName>
+		<PackageId>PanoramicData.DeepCloner</PackageId>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>PanoramicData.DeepCloner</Title>
+		<Authors>Panoramic Data Limited</Authors>
+		<Company>Panoramic Data Limited</Company>
+		<Description>A deep cloner for C# objects.</Description>
+		<Copyright>Panoramic Data Limited and contributors</Copyright>
+		<PackageProjectUrl>https://github.com/panoramicdata/PanoramicData.DeepCloner.git</PackageProjectUrl>
+		<PackageIcon>Panoramic Data.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/panoramicData/PanoramicData.DeepCloner.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>C#;deep clone;deep;clone;cloner</PackageTags>
+		<PackageReleaseNotes>Initial release</PackageReleaseNotes>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Include="Panoramic Data.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Panoramic Data.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+</Project>

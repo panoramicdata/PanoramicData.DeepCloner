@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class DeepClonerExprGenerator
 	{
@@ -22,9 +22,9 @@ namespace Force.DeepCloner.Helpers
 #if NETCORE13
 				_fieldSetMethod = typeof(FieldInfo).GetRuntimeMethod("SetValue", new[] { typeof(object), typeof(object) });
 #else
-				_fieldSetMethod = typeof(FieldInfo).GetMethod("SetValue", new[] {typeof(object), typeof(object)});
+				_fieldSetMethod = typeof(FieldInfo).GetMethod("SetValue", new[] { typeof(object), typeof(object) });
 #endif
-				
+
 				if (_fieldSetMethod == null)
 					throw new ArgumentNullException();
 			}
@@ -33,14 +33,14 @@ namespace Force.DeepCloner.Helpers
 				// cannot
 			}
 		}
-		
+
 		internal static object GenerateClonerInternal(Type realType, bool asObject)
 		{
 			return GenerateProcessMethod(realType, asObject && realType.IsValueType());
 		}
 
 		private static FieldInfo _attributesFieldInfo = typeof(FieldInfo).GetPrivateField("m_fieldAttributes");
-		
+
 		// today, I found that it not required to do such complex things. Just SetValue is enough
 		// is it new runtime changes, or I made incorrect assumptions eariler
 		// slow, but hardcore method to set readonly field
@@ -178,7 +178,7 @@ namespace Force.DeepCloner.Helpers
 						else
 						{
 							var setMethod = typeof(DeepClonerExprGenerator).GetPrivateStaticMethod("ForceSetField");
-							expressionList.Add(Expression.Call(setMethod, Expression.Constant(fieldInfo), Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object))));							
+							expressionList.Add(Expression.Call(setMethod, Expression.Constant(fieldInfo), Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object))));
 						}
 					}
 					else
@@ -240,24 +240,24 @@ namespace Force.DeepCloner.Helpers
 		{
 			ParameterExpression from = Expression.Parameter(typeof(object));
 			var state = Expression.Parameter(typeof(DeepCloneState));
-			
+
 			var local = Expression.Variable(type);
 			var assign = Expression.Assign(local, Expression.Convert(from, type));
 
 			var funcType = typeof(Func<object, DeepCloneState, object>);
 
 			var tupleLength = type.GenericArguments().Length;
-			
+
 			var constructor = Expression.Assign(local, Expression.New(type.GetPublicConstructors().First(x => x.GetParameters().Length == tupleLength),
 				type.GetPublicProperties().OrderBy(x => x.Name)
 					.Where(x => x.CanRead && x.Name.StartsWith("Item") && char.IsDigit(x.Name[4]))
 					.Select(x => Expression.Property(local, x.Name))));
-			
+
 			return Expression.Lambda(funcType, Expression.Block(new[] { local },
 				assign, constructor, Expression.Call(state, typeof(DeepCloneState).GetMethod("AddKnownRef"), from, local),
 					from),
 				from, state).Compile();
 		}
-		
+
 	}
 }

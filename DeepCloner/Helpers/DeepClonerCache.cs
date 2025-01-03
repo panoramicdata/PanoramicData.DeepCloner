@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class DeepClonerCache
 	{
@@ -18,7 +18,7 @@ namespace Force.DeepCloner.Helpers
 		public static object GetOrAddClass<T>(Type type, Func<Type, T> adder)
 		{
 			// return _typeCache.GetOrAdd(type, x => adder(x));
-			
+
 			// this implementation is slightly faster than getoradd
 			object value;
 			if (_typeCache.TryGetValue(type, out value)) return value;
@@ -36,7 +36,7 @@ namespace Force.DeepCloner.Helpers
 		{
 			object value;
 			if (_typeCacheDeepTo.TryGetValue(type, out value)) return value;
-			
+
 			// will lock by type object to ensure only one type generator is generated simultaneously
 			lock (type)
 			{
@@ -50,7 +50,7 @@ namespace Force.DeepCloner.Helpers
 		{
 			object value;
 			if (_typeCacheShallowTo.TryGetValue(type, out value)) return value;
-			
+
 			// will lock by type object to ensure only one type generator is generated simultaneously
 			lock (type)
 			{
@@ -67,7 +67,7 @@ namespace Force.DeepCloner.Helpers
 			// this implementation is slightly faster than getoradd
 			object value;
 			if (_structAsObjectCache.TryGetValue(type, out value)) return value;
-			
+
 			// will lock by type object to ensure only one type generator is generated simultaneously
 			lock (type)
 			{

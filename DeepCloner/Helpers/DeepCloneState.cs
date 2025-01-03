@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal class DeepCloneState
 	{
@@ -21,7 +21,7 @@ namespace Force.DeepCloner.Helpers
 			if (ReferenceEquals(from, baseFromTo[0])) return baseFromTo[3];
 			if (ReferenceEquals(from, baseFromTo[1])) return baseFromTo[4];
 			if (ReferenceEquals(from, baseFromTo[2])) return baseFromTo[5];
-			if (_loops == null) 
+			if (_loops == null)
 				return null;
 
 			return _loops.FindEntry(from);
@@ -37,7 +37,7 @@ namespace Force.DeepCloner.Helpers
 				return;
 			}
 
-			if (_loops == null) 
+			if (_loops == null)
 				_loops = new MiniDictionary();
 			_loops.Insert(from, to);
 		}
@@ -63,7 +63,7 @@ namespace Force.DeepCloner.Helpers
 
 			public MiniDictionary(int capacity)
 			{
-				if (capacity > 0) 
+				if (capacity > 0)
 					Initialize(capacity);
 			}
 
@@ -75,7 +75,7 @@ namespace Force.DeepCloner.Helpers
 					var entries1 = _entries;
 					for (var i = _buckets[hashCode % _buckets.Length]; i >= 0; i = entries1[i].Next)
 					{
-						if (entries1[i].HashCode == hashCode && ReferenceEquals(entries1[i].Key, key)) 
+						if (entries1[i].HashCode == hashCode && ReferenceEquals(entries1[i].Key, key))
 							return entries1[i].Value;
 					}
 				}
@@ -83,7 +83,7 @@ namespace Force.DeepCloner.Helpers
 				return null;
 			}
 
-			private static readonly int[] _primes = 
+			private static readonly int[] _primes =
 			{
 				3, 7, 11, 17, 23, 29, 37, 47, 59, 71, 89, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919,
 				1103, 1327, 1597, 1931, 2333, 2801, 3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591,
@@ -92,9 +92,9 @@ namespace Force.DeepCloner.Helpers
 				1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369
 			};
 
-			private static int GetPrime(int min) 
+			private static int GetPrime(int min)
 			{
-				for (var i = 0; i < _primes.Length; i++) 
+				for (var i = 0; i < _primes.Length; i++)
 				{
 					var prime = _primes[i];
 					if (prime >= min) return prime;
@@ -110,15 +110,15 @@ namespace Force.DeepCloner.Helpers
 
 				return min;
 			}
-			
-			private static bool IsPrime(int candidate) 
+
+			private static bool IsPrime(int candidate)
 			{
-				if ((candidate & 1) != 0) 
+				if ((candidate & 1) != 0)
 				{
 					var limit = (int)Math.Sqrt(candidate);
 					for (var divisor = 3; divisor <= limit; divisor += 2)
 					{
-						if ((candidate % divisor) == 0)
+						if (candidate % divisor == 0)
 							return false;
 					}
 
@@ -127,7 +127,7 @@ namespace Force.DeepCloner.Helpers
 
 				return candidate == 2;
 			}
-			
+
 			private static int ExpandPrime(int oldSize)
 			{
 				var newSize = 2 * oldSize;
@@ -143,7 +143,7 @@ namespace Force.DeepCloner.Helpers
 			private void Initialize(int size)
 			{
 				_buckets = new int[size];
-				for (int i = 0; i < _buckets.Length; i++) 
+				for (int i = 0; i < _buckets.Length; i++)
 					_buckets[i] = -1;
 				_entries = new Entry[size];
 			}
@@ -155,7 +155,7 @@ namespace Force.DeepCloner.Helpers
 				var targetBucket = hashCode % _buckets.Length;
 
 				var entries1 = _entries;
-				
+
 				// we're always checking for entry before adding new
 				// so this loop is useless
 				/*for (var i = _buckets[targetBucket]; i >= 0; i = entries1[i].Next)
@@ -192,7 +192,7 @@ namespace Force.DeepCloner.Helpers
 			private void Resize(int newSize)
 			{
 				var newBuckets = new int[newSize];
-				for (int i = 0; i < newBuckets.Length; i++) 
+				for (int i = 0; i < newBuckets.Length; i++)
 					newBuckets[i] = -1;
 				var newEntries = new Entry[newSize];
 				Array.Copy(_entries, 0, newEntries, 0, _count);

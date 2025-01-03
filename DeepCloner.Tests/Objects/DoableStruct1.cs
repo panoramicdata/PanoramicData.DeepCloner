@@ -1,12 +1,11 @@
-﻿namespace Force.DeepCloner.Tests.Objects
-{
-	public struct DoableStruct1 : IDoable
-	{
-		public int X;
+﻿namespace DeepCloner.Test.Objects;
 
-		public int Do()
-		{
-			return ++X;
-		}
+public struct DoableStruct1 : IDoable
+{
+	public int X;
+
+	public int Do()
+	{
+		return ++X;
 	}
 }

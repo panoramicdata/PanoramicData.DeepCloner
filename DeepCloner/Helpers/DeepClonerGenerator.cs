@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class DeepClonerGenerator
 	{
@@ -26,11 +26,11 @@ namespace Force.DeepCloner.Helpers
 		{
 			if (obj == null)
 				return null;
-		
+
 			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => GenerateCloner(t, true));
 
 			// null -> should return same type
-			if (cloner == null) 
+			if (cloner == null)
 				return obj;
 
 			return cloner(obj, new DeepCloneState());
@@ -38,18 +38,18 @@ namespace Force.DeepCloner.Helpers
 
 		internal static object CloneClassInternal(object obj, DeepCloneState state)
 		{
-			if (obj == null) 
+			if (obj == null)
 				return null;
 
 			var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => GenerateCloner(t, true));
 
 			// safe object
-			if (cloner == null) 
+			if (cloner == null)
 				return obj;
 
 			// loop
 			var knownRef = state.GetKnownRef(obj);
-			if (knownRef != null) 
+			if (knownRef != null)
 				return knownRef;
 
 			return cloner(obj, state);
@@ -61,7 +61,7 @@ namespace Force.DeepCloner.Helpers
 			var cloner = GetClonerForValueType<T>();
 
 			// safe ojbect
-			if (cloner == null) 
+			if (cloner == null)
 				return obj;
 
 			return cloner(obj, state);
@@ -109,14 +109,14 @@ namespace Force.DeepCloner.Helpers
 		{
 			// not null from called method, but will check it anyway
 			if (obj == null) return null;
-			
+
 			// we cannot determine by type multidim arrays (one dimension is possible)
 			// so, will check for index here
 			var lb1 = obj.GetLowerBound(0);
 			var lb2 = obj.GetLowerBound(1);
 			if (lb1 != 0 || lb2 != 0)
-				return (T[,]) CloneAbstractArrayInternal(obj, state);
-			
+				return (T[,])CloneAbstractArrayInternal(obj, state);
+
 			var l1 = obj.GetLength(0);
 			var l2 = obj.GetLength(1);
 			var outArray = new T[l1, l2];
@@ -199,15 +199,10 @@ namespace Force.DeepCloner.Helpers
 
 		private static object GenerateCloner(Type t, bool asObject)
 		{
-			if (DeepClonerSafeTypes.CanReturnSameObject(t) && (asObject && !t.IsValueType())) 
+			if (DeepClonerSafeTypes.CanReturnSameObject(t) && asObject && !t.IsValueType())
 				return null;
 
-#if !NETCORE
-			if (ShallowObjectCloner.IsSafeVariant()) return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
-			else return DeepClonerMsilGenerator.GenerateClonerInternal(t, asObject);
-#else
 			return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
-#endif
 		}
 
 		public static object CloneObjectTo(object objFrom, object objTo, bool isDeep)

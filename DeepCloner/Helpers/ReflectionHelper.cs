@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class ReflectionHelper
 	{
@@ -50,7 +50,7 @@ namespace Force.DeepCloner.Helpers
 			return t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 #endif
 		}
-		
+
 		public static PropertyInfo[] GetPublicProperties(this Type t)
 		{
 #if NETCORE
@@ -157,7 +157,7 @@ namespace Force.DeepCloner.Helpers
 			return from.IsAssignableFrom(to.GetType());
 		}
 #endif
-		
+
 		public static Type[] GenericArguments(this Type t)
 		{
 #if NETCORE

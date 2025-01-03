@@ -1,29 +1,37 @@
-# DeepCloner
+# PanoramicData.DeepCloner
 
-Library with extenstion to clone objects for .NET. It can deep or shallow copy objects. In deep cloning all object graph is maintained. Library actively uses code-generation in runtime as result object cloning is blazingly fast.
-Also, there are some performance tricks to increase cloning speed (see tests below).
-Objects are copied by its' internal structure, **no** methods or constructuctors are called for cloning objects. As result, you can copy **any** object, but we don't recommend to copy objects which are binded to native resources or pointers. It can cause unpredictable results (but object will be cloned).
+Library with extension to clone objects for .NET. It can deep or shallow copy objects.
+In deep cloning, the full object graph is maintained.
+Library actively uses code-generation in runtime and other tricks for blazingly-fast object cloning.
+Objects are copied by their internal structure, **no** methods or constructors are called for cloning objects.
+You can copy **any** object, but we don't recommend to copy objects which are bound to native resources or pointers, as this can cause unpredictable results.
+There is no requirement to specify object type for cloning.
 
-You don't need to mark objects somehow, like Serializable-attribute, or restrict to specific interface. Absolutely any object can be cloned by this library. And this object doesn't have any ability to determine that he is clone (except with very specific methods).
+You don't need to mark objects with the Serializable attribute, or restrict objects to a specific interface.
 
-Also, there is no requirement to specify object type for cloning. Object can be casted to inteface or as an abstract object, you can clone array of ints as abstract Array or IEnumerable, even null can be cloned without any errors.
+Object can be cast to interface or as an abstract object, you can clone array of ints as abstract Array or IEnumerable, even null can be cloned without any errors.
 
 Installation through Nuget:
 
 ```
-	Install-Package DeepCloner
+	Install-Package PanoramicData.DeepCloner
 ```
 
+## Origins
+
+This library is a fork of [FastDeepCloner](https://github.com/force-net/DeepCloner.git).
 
 ## Supported Frameworks
 
-DeepCloner works for .NET 4.0 or higher or for .NET Standard 1.3 (.NET Core). .NET Standard version implements only Safe copying variant (slightly slower than standard, see Benchmarks).
+DeepCloner is a .NET Standard 2.0 library.
 
 ## Limitation
 
-Library requires Full Trust permission set or Reflection permission (MemberAccess). It prefers Full Trust, but if code lacks of this variant, library seamlessly switchs to slighlty slower but safer variant.
+Library requires Full Trust permission set or Reflection permission (MemberAccess).
+It prefers Full Trust, but if code lacks of this variant, library seamlessly switches to slightly slower but safer variant.
 
-If your code is on very limited permission set, you can try to use another library, e.g. [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions). It clones only public properties of objects, so, result can differ, but should work better (it requires only RestrictedMemberAccess permission).
+If your code is on very limited permission set, you can try to use another library e.g. [CloneExtensions](https://github.com/MarcinJuraszek/CloneExtensions).
+It clones only public properties of objects, so, result can differ, but should work better (it requires only RestrictedMemberAccess permission).
 
 ## Usage
 
@@ -63,7 +71,8 @@ public class Derived : BaseClass
 	}
 }
 ```
-Please, note, that _DeepCloneTo_ and _ShallowCloneTo_ requre that object should be class (it is useless for structures) and derived class must be real descendant of parent class (or same type). In another words, this code will not work:
+Please, note, that _DeepCloneTo_ and _ShallowCloneTo_ require that object should be class (it is useless for structures) and derived class must be real descendant of parent class (or same type).
+In another words, this code will not work:
 ```
 public class Base {}
 public class Derived1 : Base {}
@@ -80,7 +89,7 @@ b.DeepCloneTo(derived2);
 
 Through nuget: 
 ```
-  Install-Package DeepCloner
+  Install-Package PanoramicData.DeepCloner
 ```
 
 ## Details
@@ -88,20 +97,20 @@ Through nuget:
 You can use deep clone of objects for a lot of situations, e.g.:
 * Emulation of external service or _deserialization elimination_ (e.g. in Unit Testing). When code has received object from external source, code can change it (because object for code is *own*).
 * ReadOnly object replace. Instead of wrapping your object to readonly object, you can clone object and target code can do anything with it without any restriction.
-* Caching. You can cache data locally and want to ensurce that cached object hadn't been changed by other code
+* Caching. You can cache data locally and want to ensure that cached object hadn't been changed by other code.
  
 You can use shallow clone as fast, light version of deep clone (if your situation allows that). Main difference between deep and shallow clone in code below:
 ```
-  // public class A { public B B; }
-  // public class B { public int X; }
-  var b = new B { X = 1 };
-  var a = new A { B = b };
-  var deepClone = a.DeepClone();
-  deepClone.B.X = 2;
-  Console.WriteLine(a.B.X); // 1
-  var shallowClone = a.ShallowClone();
-  shallowClone.B.X = 2;
-  Console.WriteLine(a.B.X); // 2
+	// public class A { public B B; }
+	// public class B { public int X; }
+	var b = new B { X = 1 };
+	var a = new A { B = b };
+	var deepClone = a.DeepClone();
+	deepClone.B.X = 2;
+	Console.WriteLine(a.B.X); // 1
+	var shallowClone = a.ShallowClone();
+	shallowClone.B.X = 2;
+	Console.WriteLine(a.B.X); // 2
 ```
 So, deep cloning is guarantee that all changes of cloned object does not affect original. Shallow clone does not guarantee this. But it faster, because deep clone of object can copy big graph of related objects and related objects of related objects and related related related objects, and... so on...
 
@@ -117,8 +126,8 @@ Tables below, just for information. Simple object with some fields is cloned mul
 
 Example of object
 ```
-var c = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
-var c1 = new C1Complex { C1 = c, Guid = Guid.NewGuid(), O = new object(), V1 = 42, V2 = "some test string", Array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } };
+	var c = new C1 { V1 = 1, O = new object(), V2 = "xxx" };
+	var c1 = new C1Complex { C1 = c, Guid = Guid.NewGuid(), O = new object(), V1 = 42, V2 = "some test string", Array = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 } };
 ```
 
 
@@ -167,4 +176,4 @@ We perform a lot of performance tricks to ensure cloning is really fast. Here is
 
 ## License
 
-[MIT](https://github.com/force-net/DeepCloner/blob/develop/LICENSE) license
+MIT license

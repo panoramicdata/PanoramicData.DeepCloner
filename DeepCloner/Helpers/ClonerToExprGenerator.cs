@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class ClonerToExprGenerator
 	{
@@ -77,7 +77,7 @@ namespace Force.DeepCloner.Helpers
 					var get = Expression.Field(fromLocal, fieldInfo);
 
 					// toLocal.Field = Clone...Internal(fromLocal.Field)
-					var call = (Expression) Expression.Call(methodInfo, get, state);
+					var call = (Expression)Expression.Call(methodInfo, get, state);
 					if (!fieldInfo.FieldType.IsValueType())
 						call = Expression.Convert(call, fieldInfo.FieldType);
 
@@ -151,7 +151,7 @@ namespace Force.DeepCloner.Helpers
 					methodInfo = typeof(ClonerToExprGenerator).GetPrivateStaticMethod("Clone2DimArrayInternal").MakeGenericMethod(elementType);
 				else
 					methodInfo = typeof(ClonerToExprGenerator).GetPrivateStaticMethod("CloneAbstractArrayInternal");
-				
+
 				var callS = Expression.Call(methodInfo, Expression.Convert(from, type), Expression.Convert(to, type), state, Expression.Constant(isDeep));
 				return Expression.Lambda(funcType, callS, from, to, state).Compile();
 			}
@@ -205,14 +205,14 @@ namespace Force.DeepCloner.Helpers
 			if (objFrom == null || objTo == null) return null;
 			if (objFrom.GetLowerBound(0) != 0 || objFrom.GetLowerBound(1) != 0
 				|| objTo.GetLowerBound(0) != 0 || objTo.GetLowerBound(1) != 0)
-				return (T[,]) CloneAbstractArrayInternal(objFrom, objTo, state, isDeep);
-			
+				return (T[,])CloneAbstractArrayInternal(objFrom, objTo, state, isDeep);
+
 			var l1 = Math.Min(objFrom.GetLength(0), objTo.GetLength(0));
 			var l2 = Math.Min(objFrom.GetLength(1), objTo.GetLength(1));
 			state.AddKnownRef(objFrom, objTo);
 			if ((!isDeep || DeepClonerSafeTypes.CanReturnSameObject(typeof(T)))
-			    && objFrom.GetLength(0) == objTo.GetLength(0)
-			    && objFrom.GetLength(1) == objTo.GetLength(1))
+				&& objFrom.GetLength(0) == objTo.GetLength(0)
+				&& objFrom.GetLength(1) == objTo.GetLength(1))
 			{
 				Array.Copy(objFrom, objTo, objFrom.Length);
 				return objTo;
@@ -221,8 +221,8 @@ namespace Force.DeepCloner.Helpers
 			if (!isDeep)
 			{
 				for (var i = 0; i < l1; i++)
-				for (var k = 0; k < l2; k++)
-					objTo[i, k] = objFrom[i, k];
+					for (var k = 0; k < l2; k++)
+						objTo[i, k] = objFrom[i, k];
 				return objTo;
 			}
 
@@ -230,14 +230,14 @@ namespace Force.DeepCloner.Helpers
 			{
 				var cloner = DeepClonerGenerator.GetClonerForValueType<T>();
 				for (var i = 0; i < l1; i++)
-				for (var k = 0; k < l2; k++)
-					objTo[i, k] = cloner(objFrom[i, k], state);
+					for (var k = 0; k < l2; k++)
+						objTo[i, k] = cloner(objFrom[i, k], state);
 			}
 			else
 			{
 				for (var i = 0; i < l1; i++)
-				for (var k = 0; k < l2; k++)
-					objTo[i, k] = (T)DeepClonerGenerator.CloneClassInternal(objFrom[i, k], state);
+					for (var k = 0; k < l2; k++)
+						objTo[i, k] = (T)DeepClonerGenerator.CloneClassInternal(objFrom[i, k], state);
 			}
 
 			return objTo;

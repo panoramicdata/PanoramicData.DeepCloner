@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	/// <summary>
 	/// Safe types are types, which can be copied without real cloning. e.g. simple structs or strings (it is immutable)
@@ -38,7 +37,7 @@ namespace Force.DeepCloner.Helpers
 			bool isSafe;
 			if (KnownTypes.TryGetValue(type, out isSafe))
 				return isSafe;
-			
+
 			// enums are safe
 			// pointers (e.g. int*) are unsafe, but we cannot do anything with it except blind copy
 			if (type.IsEnum() || type.IsPointer)
@@ -47,42 +46,7 @@ namespace Force.DeepCloner.Helpers
 				return true;
 			}
 
-#if !NETCORE
-			// do not do anything with remoting. it is very dangerous to clone, bcs it relate to deep core of framework
-			if (type.FullName.StartsWith("System.Runtime.Remoting.")
-				&& type.Assembly == typeof(System.Runtime.Remoting.CustomErrorsModes).Assembly)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
 
-			if (type.FullName.StartsWith("System.Reflection.") && type.Assembly == typeof(PropertyInfo).Assembly)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-
-			// catched by previous condition
-			/*if (type.FullName.StartsWith("System.Reflection.Emit") && type.Assembly == typeof(System.Reflection.Emit.OpCode).Assembly)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}*/
-			
-			// this types are serious native resources, it is better not to clone it
-			if (type.IsSubclassOf(typeof(System.Runtime.ConstrainedExecution.CriticalFinalizerObject)))
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-
-			// Better not to do anything with COM
-			if (type.IsCOMObject)
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-#else
 			// do not copy db null
 			if (type.FullName.StartsWith("System.DBNull"))
 			{
@@ -95,19 +59,13 @@ namespace Force.DeepCloner.Helpers
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
-			
+
 			if (type.FullName.StartsWith("System.Reflection.") && Equals(type.GetTypeInfo().Assembly, typeof(PropertyInfo).GetTypeInfo().Assembly))
 			{
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
 
-			if (type.IsSubclassOfTypeByName("CriticalFinalizerObject"))
-			{
-				KnownTypes.TryAdd(type, true);
-				return true;
-			}
-			
 			// better not to touch ms dependency injection
 			if (type.FullName.StartsWith("Microsoft.Extensions.DependencyInjection."))
 			{
@@ -120,15 +78,15 @@ namespace Force.DeepCloner.Helpers
 				KnownTypes.TryAdd(type, true);
 				return true;
 			}
-#endif
+
 			// default comparers should not be cloned due possible comparison EqualityComparer<T>.Default == comparer
 			if (type.FullName.Contains("EqualityComparer"))
 			{
 				if (type.FullName.StartsWith("System.Collections.Generic.GenericEqualityComparer`")
-				    || type.FullName.StartsWith("System.Collections.Generic.ObjectEqualityComparer`")
-				    || type.FullName.StartsWith("System.Collections.Generic.EnumEqualityComparer`")
-				    || type.FullName.StartsWith("System.Collections.Generic.NullableEqualityComparer`")
-				    || type.FullName == "System.Collections.Generic.ByteEqualityComparer")
+					|| type.FullName.StartsWith("System.Collections.Generic.ObjectEqualityComparer`")
+					|| type.FullName.StartsWith("System.Collections.Generic.EnumEqualityComparer`")
+					|| type.FullName.StartsWith("System.Collections.Generic.NullableEqualityComparer`")
+					|| type.FullName == "System.Collections.Generic.ByteEqualityComparer")
 				{
 					KnownTypes.TryAdd(type, true);
 					return true;

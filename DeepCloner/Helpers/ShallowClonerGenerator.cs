@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Force.DeepCloner.Helpers
+namespace DeepCloner.Helpers
 {
 	internal static class ShallowClonerGenerator
 	{
@@ -9,9 +9,9 @@ namespace Force.DeepCloner.Helpers
 			// this is faster than typeof(T).IsValueType
 			if (obj is ValueType)
 			{
-				if (typeof(T) == obj.GetType()) 
+				if (typeof(T) == obj.GetType())
 					return obj;
-				
+
 				// we're here so, we clone value type obj as object type T
 				// so, we need to copy it, bcs we have a reference, not real object.
 				return (T)ShallowObjectCloner.CloneObject(obj);
@@ -19,7 +19,7 @@ namespace Force.DeepCloner.Helpers
 
 			if (ReferenceEquals(obj, null))
 				return (T)(object)null;
-			
+
 			if (DeepClonerSafeTypes.CanReturnSameObject(obj.GetType()))
 				return obj;
 
