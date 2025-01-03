@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
+using PanoramicData.DeepCloner;
 using System;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture(true)]
 public class GenericsSpec(bool isSafeInit) : BaseTest(isSafeInit)

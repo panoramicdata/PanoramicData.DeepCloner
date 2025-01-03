@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using PanoramicData.DeepCloner;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture]
 public class CopyToObjectSpec

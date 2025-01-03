@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace DeepCloner.Test.Imported;
+namespace PanoramicData.DeepCloner.Test.Imported;
 
 /// <summary>
 /// Supports cloning, which creates a new instance of a class with the same value as an existing instance.

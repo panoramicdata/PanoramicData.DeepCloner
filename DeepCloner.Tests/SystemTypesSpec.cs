@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
+using PanoramicData.DeepCloner;
 using System;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture(true)]
 public class SystemTypesSpec(bool isSafeInit) : BaseTest(isSafeInit)

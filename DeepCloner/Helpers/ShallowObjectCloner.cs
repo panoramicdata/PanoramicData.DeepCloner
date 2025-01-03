@@ -1,68 +1,67 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace DeepCloner.Helpers
+namespace PanoramicData.DeepCloner.Helpers;
+
+/// <summary>
+/// Internal class but due implementation restriction should be public
+/// </summary>
+public abstract class ShallowObjectCloner
 {
 	/// <summary>
-	/// Internal class but due implementation restriction should be public
+	/// Abstract method for real object cloning
 	/// </summary>
-	public abstract class ShallowObjectCloner
+	protected abstract object DoCloneObject(object obj);
+
+	private static readonly ShallowObjectCloner _unsafeInstance;
+
+	private static ShallowObjectCloner _instance;
+
+	/// <summary>
+	/// Performs real shallow object clone
+	/// </summary>
+	public static object CloneObject(object obj)
 	{
-		/// <summary>
-		/// Abstract method for real object cloning
-		/// </summary>
-		protected abstract object DoCloneObject(object obj);
+		return _instance.DoCloneObject(obj);
+	}
 
-		private static readonly ShallowObjectCloner _unsafeInstance;
+	internal static bool IsSafeVariant()
+	{
+		return _instance is ShallowSafeObjectCloner;
+	}
 
-		private static ShallowObjectCloner _instance;
+	static ShallowObjectCloner()
+	{
+		_instance = new ShallowSafeObjectCloner();
+		// no unsafe variant for core
+		_unsafeInstance = _instance;
+	}
 
-		/// <summary>
-		/// Performs real shallow object clone
-		/// </summary>
-		public static object CloneObject(object obj)
+	/// <summary>
+	/// Purpose of this method is testing variants
+	/// </summary>
+	internal static void SwitchTo(bool isSafe)
+	{
+		DeepClonerCache.ClearCache();
+		if (isSafe) _instance = new ShallowSafeObjectCloner();
+		else _instance = _unsafeInstance;
+	}
+
+	private class ShallowSafeObjectCloner : ShallowObjectCloner
+	{
+		private static readonly Func<object, object> _cloneFunc;
+
+		static ShallowSafeObjectCloner()
 		{
-			return _instance.DoCloneObject(obj);
+			var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone");
+			var p = Expression.Parameter(typeof(object));
+			var mce = Expression.Call(p, methodInfo);
+			_cloneFunc = Expression.Lambda<Func<object, object>>(mce, p).Compile();
 		}
 
-		internal static bool IsSafeVariant()
+		protected override object DoCloneObject(object obj)
 		{
-			return _instance is ShallowSafeObjectCloner;
-		}
-
-		static ShallowObjectCloner()
-		{
-			_instance = new ShallowSafeObjectCloner();
-			// no unsafe variant for core
-			_unsafeInstance = _instance;
-		}
-
-		/// <summary>
-		/// Purpose of this method is testing variants
-		/// </summary>
-		internal static void SwitchTo(bool isSafe)
-		{
-			DeepClonerCache.ClearCache();
-			if (isSafe) _instance = new ShallowSafeObjectCloner();
-			else _instance = _unsafeInstance;
-		}
-
-		private class ShallowSafeObjectCloner : ShallowObjectCloner
-		{
-			private static readonly Func<object, object> _cloneFunc;
-
-			static ShallowSafeObjectCloner()
-			{
-				var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone");
-				var p = Expression.Parameter(typeof(object));
-				var mce = Expression.Call(p, methodInfo);
-				_cloneFunc = Expression.Lambda<Func<object, object>>(mce, p).Compile();
-			}
-
-			protected override object DoCloneObject(object obj)
-			{
-				return _cloneFunc(obj);
-			}
+			return _cloneFunc(obj);
 		}
 	}
 }

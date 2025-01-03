@@ -1,7 +1,7 @@
-﻿using DeepCloner.Helpers;
+﻿using PanoramicData.DeepCloner.Helpers;
 using System.Reflection;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 public class BaseTest
 {

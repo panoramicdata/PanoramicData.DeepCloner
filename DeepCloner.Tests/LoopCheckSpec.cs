@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
+using PanoramicData.DeepCloner;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture(true)]
 public class LoopCheckSpec(bool isSafeInit) : BaseTest(isSafeInit)

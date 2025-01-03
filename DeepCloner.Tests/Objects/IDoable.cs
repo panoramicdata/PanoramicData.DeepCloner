@@ -1,4 +1,4 @@
-﻿namespace DeepCloner.Test.Objects;
+﻿namespace PanoramicData.DeepCloner.Test.Objects;
 
 public interface IDoable
 {

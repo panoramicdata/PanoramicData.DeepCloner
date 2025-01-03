@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
+using PanoramicData.DeepCloner;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture(true)]
 public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)

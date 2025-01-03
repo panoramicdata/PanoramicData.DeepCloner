@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace DeepCloner.Helpers
+namespace PanoramicData.DeepCloner.Helpers
 {
 	internal static class ReflectionHelper
 	{

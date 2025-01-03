@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DeepCloner.Test.Objects;
+namespace PanoramicData.DeepCloner.Test.Objects;
 
 public class TestObject1
 {

@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
 using NUnit.Framework;
+using PanoramicData.DeepCloner;
 using System;
 using System.Collections.Generic;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture]
 public class ClrExpectionSpec

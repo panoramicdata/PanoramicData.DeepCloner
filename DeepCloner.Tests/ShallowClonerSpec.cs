@@ -1,8 +1,8 @@
-﻿using DeepCloner.Test.Objects;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using PanoramicData.DeepCloner.Test.Objects;
 using System;
 
-namespace DeepCloner.Test;
+namespace PanoramicData.DeepCloner.Test;
 
 [TestFixture(true)]
 public class ShallowClonerSpec(bool isSafeInit) : BaseTest(isSafeInit)
