@@ -7,3 +7,5 @@ packages
 .idea
 *.iml
 private.snk
+/.vs
+/DeepCloner/.vs
