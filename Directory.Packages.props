@@ -1,0 +1,23 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.50" />
+        <PackageVersion Include="FluentValidation" Version="12.1.1" />
+     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+        <PackageVersion Include="NUnit" Version="4.5.1" />
+        <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />
+        <PackageVersion Include="Clone.Behave" Version="1.0.1" />
+        <PackageVersion Include="CloneExtensions" Version="1.4.2" />
+        <PackageVersion Include="GeorgeCloney" Version="1.1.2.20" />
+        <PackageVersion Include="NClone" Version="1.2.0" />
+        <PackageVersion Include="Nuclex.Cloning" Version="1.0.0" />
+        <PackageVersion Include="FastDeepCloner" Version="1.3.6" />
+        <PackageVersion Include="DesertOctopus" Version="0.1.1" />
+        <PackageVersion Include="EntityFramework" Version="6.5.1" />
+        <PackageVersion Include="ServiceStack" Version="10.0.6" />
+       <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.5" />
+    </ItemGroup>
+</Project>

@@ -33,7 +33,7 @@ namespace PanoramicData.DeepCloner.Helpers
 #endif
 		}
 
-		public static Type BaseType(this Type t)
+        public static Type? BaseType(this Type t)
 		{
 #if NETCORE
 			return t.GetTypeInfo().BaseType;
@@ -87,7 +87,7 @@ namespace PanoramicData.DeepCloner.Helpers
 #endif
 		}
 
-		public static MethodInfo GetPrivateMethod(this Type t, string methodName)
+       public static MethodInfo? GetPrivateMethod(this Type t, string methodName)
 		{
 #if NETCORE
 			return t.GetTypeInfo().GetDeclaredMethod(methodName);
@@ -96,7 +96,7 @@ namespace PanoramicData.DeepCloner.Helpers
 #endif
 		}
 
-		public static MethodInfo GetMethod(this Type t, string methodName)
+      public static MethodInfo? GetMethod(this Type t, string methodName)
 		{
 #if NETCORE
 			return t.GetTypeInfo().GetDeclaredMethod(methodName);
@@ -105,7 +105,7 @@ namespace PanoramicData.DeepCloner.Helpers
 #endif
 		}
 
-		public static MethodInfo GetPrivateStaticMethod(this Type t, string methodName)
+     public static MethodInfo? GetPrivateStaticMethod(this Type t, string methodName)
 		{
 #if NETCORE
 			return t.GetTypeInfo().GetDeclaredMethod(methodName);
@@ -114,7 +114,7 @@ namespace PanoramicData.DeepCloner.Helpers
 #endif
 		}
 
-		public static FieldInfo GetPrivateField(this Type t, string fieldName)
+      public static FieldInfo? GetPrivateField(this Type t, string fieldName)
 		{
 #if NETCORE
 			return t.GetTypeInfo().GetDeclaredField(fieldName);
@@ -123,7 +123,7 @@ namespace PanoramicData.DeepCloner.Helpers
 #endif
 		}
 
-		public static FieldInfo GetPrivateStaticField(this Type t, string fieldName)
+        public static FieldInfo? GetPrivateStaticField(this Type t, string fieldName)
 		{
 #if NETCORE
 			return t.GetTypeInfo().GetDeclaredField(fieldName);

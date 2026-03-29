@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿#nullable disable
+
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using PanoramicData.DeepCloner;
 using System;
 using System.Collections.Generic;

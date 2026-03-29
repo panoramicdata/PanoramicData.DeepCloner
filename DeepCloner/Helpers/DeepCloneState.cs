@@ -3,15 +3,15 @@ using System.Runtime.CompilerServices;
 
 namespace PanoramicData.DeepCloner.Helpers;
 
-internal class DeepCloneState
+internal sealed class DeepCloneState
 {
-	private MiniDictionary _loops;
+  private MiniDictionary? _loops;
 
 	private readonly object[] _baseFromTo = new object[6];
 
 	private int _idx;
 
-	public object GetKnownRef(object from)
+  public object? GetKnownRef(object from)
 	{
 		// this is faster than call Dictionary from begin
 		// also, small poco objects does not have a lot of references
@@ -40,7 +40,7 @@ internal class DeepCloneState
 		_loops.Insert(from, to);
 	}
 
-	private class MiniDictionary
+    private sealed class MiniDictionary
 	{
 		private struct Entry
 		{
@@ -50,8 +50,8 @@ internal class DeepCloneState
 			public object Value;
 		}
 
-		private int[] _buckets;
-		private Entry[] _entries;
+     private int[]? _buckets;
+		private Entry[]? _entries;
 		private int _count;
 
 
@@ -65,12 +65,12 @@ internal class DeepCloneState
 				Initialize(capacity);
 		}
 
-		public object FindEntry(object key)
+     public object? FindEntry(object key)
 		{
 			if (_buckets != null)
 			{
 				var hashCode = RuntimeHelpers.GetHashCode(key) & 0x7FFFFFFF;
-				var entries1 = _entries;
+                var entries1 = _entries!;
 				for (var i = _buckets[hashCode % _buckets.Length]; i >= 0; i = entries1[i].Next)
 				{
 					if (entries1[i].HashCode == hashCode && ReferenceEquals(entries1[i].Key, key))
@@ -150,9 +150,9 @@ internal class DeepCloneState
 		{
 			if (_buckets == null) Initialize(0);
 			var hashCode = RuntimeHelpers.GetHashCode(key) & 0x7FFFFFFF;
-			var targetBucket = hashCode % _buckets.Length;
+          var targetBucket = hashCode % _buckets!.Length;
 
-			var entries1 = _entries;
+            var entries1 = _entries!;
 
 			// we're always checking for entry before adding new
 			// so this loop is useless
@@ -168,8 +168,8 @@ internal class DeepCloneState
 			if (_count == entries1.Length)
 			{
 				Resize();
-				entries1 = _entries;
-				targetBucket = hashCode % _buckets.Length;
+                entries1 = _entries!;
+              targetBucket = hashCode % _buckets!.Length;
 			}
 
 			var index = _count;
@@ -193,7 +193,7 @@ internal class DeepCloneState
 			for (int i = 0; i < newBuckets.Length; i++)
 				newBuckets[i] = -1;
 			var newEntries = new Entry[newSize];
-			Array.Copy(_entries, 0, newEntries, 0, _count);
+         Array.Copy(_entries!, 0, newEntries, 0, _count);
 
 			for (var i = 0; i < _count; i++)
 			{

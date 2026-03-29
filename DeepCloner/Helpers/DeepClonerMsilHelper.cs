@@ -20,7 +20,7 @@ internal static class DeepClonerMsilHelper
 			if (methodBody == null) return false;
 
 			var ilAsByteArray = methodBody.GetILAsByteArray();
-			if (ilAsByteArray.Length == 7
+           if (ilAsByteArray != null && ilAsByteArray.Length == 7
 				&& ilAsByteArray[0] == 0x02 // Ldarg_0
 				&& ilAsByteArray[1] == 0x28 // newobj
 				&& ilAsByteArray[6] == 0x2a // ret
@@ -28,7 +28,7 @@ internal static class DeepClonerMsilHelper
 			{
 				return true;
 			}
-			else if (ilAsByteArray.Length == 1 && ilAsByteArray[0] == 0x2a) // ret
+          else if (ilAsByteArray != null && ilAsByteArray.Length == 1 && ilAsByteArray[0] == 0x2a) // ret
 			{
 				return true;
 			}

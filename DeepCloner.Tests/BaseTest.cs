@@ -1,4 +1,6 @@
-﻿using PanoramicData.DeepCloner.Helpers;
+﻿#nullable disable
+
+using PanoramicData.DeepCloner.Helpers;
 using System.Reflection;
 
 namespace PanoramicData.DeepCloner.Test;

@@ -7,5 +7,6 @@ packages
 .idea
 *.iml
 private.snk
+nuget-key.txt
 /.vs
 /DeepCloner/.vs

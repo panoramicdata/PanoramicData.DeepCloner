@@ -1,5 +1,7 @@
 # PanoramicData.DeepCloner
 
+[![Codacy Badge](https://app.codacy.com/gh/panoramicdata/PanoramicData.DeepCloner/badge/grade)](https://app.codacy.com/gh/panoramicdata/PanoramicData.DeepCloner/dashboard?utm_source=gh&utm_medium=referral&utm_content=panoramicdata/PanoramicData.DeepCloner&utm_campaign=Badge_grade)
+
 Library with extension to clone objects for .NET. It can deep or shallow copy objects.
 In deep cloning, the full object graph is maintained.
 Library actively uses code-generation in runtime and other tricks for blazingly-fast object cloning.

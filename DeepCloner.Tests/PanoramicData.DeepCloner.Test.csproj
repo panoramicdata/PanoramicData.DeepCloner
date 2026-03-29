@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net90</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<DebugType>portable</DebugType>
 		<AssemblyName>DeepCloner.NET.Tests</AssemblyName>
 		<OutputType>Library</OutputType>
@@ -11,23 +11,23 @@
 		<ProjectReference Include="..\DeepCloner\PanoramicData.DeepCloner.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="FluentValidation" Version="11.11.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
-		<PackageReference Include="NUnit" Version="3.10.1" />
-		<PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+       <PackageReference Include="FluentValidation" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="NUnit" />
+		<PackageReference Include="NUnit3TestAdapter" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
-		<PackageReference Include="Clone.Behave" Version="1.0.1" />
-		<PackageReference Include="CloneExtensions" Version="1.2" />
-		<PackageReference Include="GeorgeCloney" Version="1.1.2.20" />
-		<PackageReference Include="NClone" Version="1.1.1" />
-		<PackageReference Include="Nuclex.Cloning" Version="1.0.0" />
-		<PackageReference Include="FastDeepCloner" Version="1.0.9" />
-		<PackageReference Include="DesertOctopus" Version="0.1.1" />
-		<PackageReference Include="EntityFramework" Version="6.1.3" />
-		<PackageReference Include="ServiceStack" Version="5.9.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+     <PackageReference Include="Clone.Behave" />
+		<PackageReference Include="CloneExtensions" />
+		<PackageReference Include="GeorgeCloney" />
+		<PackageReference Include="NClone" />
+		<PackageReference Include="Nuclex.Cloning" />
+		<PackageReference Include="FastDeepCloner" />
+		<PackageReference Include="DesertOctopus" />
+		<PackageReference Include="EntityFramework" />
+		<PackageReference Include="ServiceStack" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
 	</ItemGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>

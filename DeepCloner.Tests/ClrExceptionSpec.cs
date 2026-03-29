@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿#nullable disable
+
+using FluentValidation;
 using NUnit.Framework;
 using PanoramicData.DeepCloner;
 using System;

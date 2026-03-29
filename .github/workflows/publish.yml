@@ -1,0 +1,36 @@
+name: publish
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    environment: nuget
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore .\PanoramicData.DeepCloner.slnx
+
+      - name: Build library
+        run: dotnet build .\DeepCloner\PanoramicData.DeepCloner.csproj --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack .\DeepCloner\PanoramicData.DeepCloner.csproj --configuration Release --no-build --output .\artifacts\packages
+
+      - name: Push package
+        run: dotnet nuget push .\artifacts\packages\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Push symbols
+        run: dotnet nuget push .\artifacts\packages\*.snupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -1,4 +1,6 @@
 ﻿// copied from https://raw.githubusercontent.com/Alenah091/FastDeepCloner/master/FastDeepCloner.cs because I need .NET 4.0 for tests
+#nullable disable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -160,7 +162,9 @@ public class FastDeepCloner_Copy
 		else
 		{
 			// Create an empty object and ignore its constructor.
+   #pragma warning disable SYSLIB0050
 			tObject = FormatterServices.GetUninitializedObject(_primaryType);
+   #pragma warning restore SYSLIB0050
 			var fullPath = _primaryType.Name;
 			if (_fieldType == FieldType_Copy.PropertyInfo)
 			{

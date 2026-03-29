@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable disable
+
+using System;
 using System.Linq;
 
 namespace PanoramicData.DeepCloner.Helpers;
@@ -197,7 +199,7 @@ internal static class DeepClonerGenerator
 		return (Func<T, DeepCloneState, T>)DeepClonerCache.GetOrAddStructAsObject(typeof(T), t => GenerateCloner(t, false));
 	}
 
-	private static object GenerateCloner(Type t, bool asObject)
+   private static object GenerateCloner(Type t, bool asObject)
 	{
 		if (DeepClonerSafeTypes.CanReturnSameObject(t) && asObject && !t.IsValueType())
 			return null;
@@ -205,12 +207,12 @@ internal static class DeepClonerGenerator
 		return DeepClonerExprGenerator.GenerateClonerInternal(t, asObject);
 	}
 
-	public static object CloneObjectTo(object objFrom, object objTo, bool isDeep)
+ public static object CloneObjectTo(object objFrom, object objTo, bool isDeep)
 	{
 		if (objTo == null) return null;
 
 		if (objFrom == null)
-			throw new ArgumentNullException("objFrom", "Cannot copy null object to another");
+           throw new ArgumentNullException(nameof(objFrom), "Cannot copy null object to another");
 		var type = objFrom.GetType();
 		if (!type.IsInstanceOfType(objTo))
 			throw new InvalidOperationException("From object should be derived from From object, but From object has type " + objFrom.GetType().FullName + " and to " + objTo.GetType().FullName);

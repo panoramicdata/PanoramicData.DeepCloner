@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#nullable disable
+
+using NUnit.Framework;
 using PanoramicData.DeepCloner.Test.Objects;
 using System;
 
@@ -194,11 +196,16 @@ public class SimpleObjectSpec(bool isSafeInit) : BaseTest(isSafeInit)
 
 		private readonly object y = new();
 
-		private readonly StructWithObject z;
+        private readonly StructWithObject z = default;
 
 		public object GetY()
 		{
 			return y;
+		}
+
+       public object GetZ()
+		{
+			return z.Z;
 		}
 	}
 

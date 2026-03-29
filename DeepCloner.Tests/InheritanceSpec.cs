@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#nullable disable
+
+using NUnit.Framework;
 using PanoramicData.DeepCloner;
 using System;
 
@@ -250,8 +252,13 @@ public class InheritanceSpec(bool isSafeInit) : BaseTest(isSafeInit)
 		public Safe1 Safe;
 	}
 
-	public class V2(string x)
+    public class V2
 	{
+      public V2(string x)
+		{
+			_ = x;
+		}
+
 		public Safe1 Safe;
 	}
 

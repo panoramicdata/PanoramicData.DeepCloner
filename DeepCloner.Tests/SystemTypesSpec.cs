@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#nullable disable
+
+using NUnit.Framework;
 using PanoramicData.DeepCloner;
 using System;
 using System.Globalization;
@@ -83,7 +85,9 @@ public class SystemTypesSpec(bool isSafeInit) : BaseTest(isSafeInit)
 	[Test(Description = "Without special handling it causes exception on destruction due native resources usage")]
 	public void Certificate_Should_Be_Cloned()
 	{
+   #pragma warning disable SYSLIB0057
 		var cert = new X509Certificate2(Convert.FromBase64String(CertData), "1");
+   #pragma warning restore SYSLIB0057
 		cert.DeepClone();
 		cert.DeepClone();
 		GC.Collect();
@@ -93,7 +97,9 @@ public class SystemTypesSpec(bool isSafeInit) : BaseTest(isSafeInit)
 	[Test(Description = "Without special handling it causes exception on destruction due native resources usage")]
 	public void Certificate_Should_Be_Shallow_Cloned()
 	{
+   #pragma warning disable SYSLIB0057
 		var cert = new X509Certificate2(Convert.FromBase64String(CertData), "1");
+    #pragma warning restore SYSLIB0057
 		cert.ShallowClone();
 		cert.ShallowClone();
 		GC.Collect();

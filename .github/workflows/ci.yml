@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  build-test-pack:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore .\PanoramicData.DeepCloner.slnx
+
+      - name: Build library
+        run: dotnet build .\DeepCloner\PanoramicData.DeepCloner.csproj --configuration Release --no-restore
+
+      - name: Build tests
+        run: dotnet build .\DeepCloner.Tests\PanoramicData.DeepCloner.Test.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test .\DeepCloner.Tests\PanoramicData.DeepCloner.Test.csproj --configuration Release --no-build --verbosity minimal
+
+      - name: Pack
+        run: dotnet pack .\DeepCloner\PanoramicData.DeepCloner.csproj --configuration Release --no-build --output .\artifacts\packages
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: .\artifacts\packages\*

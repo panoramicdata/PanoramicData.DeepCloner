@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#nullable disable
+
+using NUnit.Framework;
 using PanoramicData.DeepCloner.Test.Objects;
 using System;
 

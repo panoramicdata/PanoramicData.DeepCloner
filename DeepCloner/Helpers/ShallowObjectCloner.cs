@@ -47,13 +47,13 @@ public abstract class ShallowObjectCloner
 		else _instance = _unsafeInstance;
 	}
 
-	private class ShallowSafeObjectCloner : ShallowObjectCloner
+ private sealed class ShallowSafeObjectCloner : ShallowObjectCloner
 	{
 		private static readonly Func<object, object> _cloneFunc;
 
 		static ShallowSafeObjectCloner()
 		{
-			var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone");
+            var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone")!;
 			var p = Expression.Parameter(typeof(object));
 			var mce = Expression.Call(p, methodInfo);
 			_cloneFunc = Expression.Lambda<Func<object, object>>(mce, p).Compile();

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#nullable disable
+
+using NUnit.Framework;
 using PanoramicData.DeepCloner;
 using System;
 
@@ -21,8 +23,14 @@ public class ConstructorsSpec(bool isSafeInit) : BaseTest(isSafeInit)
 		public int X { get; set; }
 	}
 
-	public class T2(int arg1, int arg2)
+ public class T2
 	{
+      public T2(int arg1, int arg2)
+		{
+			_ = arg1;
+			_ = arg2;
+		}
+
 		public int X { get; set; }
 	}
 
