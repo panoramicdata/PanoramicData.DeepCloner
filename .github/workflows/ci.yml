@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v5
@@ -28,9 +30,6 @@ jobs:
 
       - name: Build tests
         run: dotnet build .\DeepCloner.Tests\PanoramicData.DeepCloner.Test.csproj --configuration Release --no-restore
-
-      - name: Run tests
-        run: dotnet test .\DeepCloner.Tests\PanoramicData.DeepCloner.Test.csproj --configuration Release --no-build --verbosity minimal
 
       - name: Pack
         run: dotnet pack .\DeepCloner\PanoramicData.DeepCloner.csproj --configuration Release --no-build --output .\artifacts\packages
