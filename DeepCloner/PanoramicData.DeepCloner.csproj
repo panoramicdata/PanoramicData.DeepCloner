@@ -1,50 +1,52 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<VersionPrefix>1.0</VersionPrefix>
-		<TargetFrameworks>net10.0</TargetFrameworks>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<AssemblyName>PanoramicData.DeepCloner</AssemblyName>
-		<PackageId>PanoramicData.DeepCloner</PackageId>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Title>PanoramicData.DeepCloner</Title>
-		<Description>A deep cloner for C# objects.</Description>
-		<PackageProjectUrl>https://github.com/panoramicdata/PanoramicData.DeepCloner.git</PackageProjectUrl>
-		<PackageIcon>Panoramic Data.png</PackageIcon>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/panoramicData/PanoramicData.DeepCloner.git</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageTags>C#;deep clone;deep;clone;cloner</PackageTags>
-		<PackageReleaseNotes>Initial release</PackageReleaseNotes>
-		<IncludeSymbols>True</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-		<AnalysisLevel>latest-recommended</AnalysisLevel>
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Remove="Properties\**" />
-	  <EmbeddedResource Remove="Properties\**" />
-	  <None Remove="Properties\**" />
-	</ItemGroup>
-	<ItemGroup>
-		<Content Include="Panoramic Data.png" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="Panoramic Data.png">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-		<None Include="..\README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-   <PackageReference Include="Nerdbank.GitVersioning">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	</ItemGroup>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <VersionPrefix>1.0</VersionPrefix>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>PanoramicData.DeepCloner</AssemblyName>
+    <PackageId>PanoramicData.DeepCloner</PackageId>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>PanoramicData.DeepCloner</Title>
+    <Description>A deep cloner for C# objects.</Description>
+    <PackageProjectUrl>https://github.com/panoramicdata/PanoramicData.DeepCloner.git</PackageProjectUrl>
+    <PackageIcon>Panoramic Data.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/panoramicData/PanoramicData.DeepCloner.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>C#;deep clone;deep;clone;cloner</PackageTags>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <LangVersion>latest</LangVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Panoramic Data.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Panoramic Data.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>
