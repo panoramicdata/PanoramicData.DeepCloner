@@ -10,3 +10,6 @@ private.snk
 nuget-key.txt
 /.vs
 /DeepCloner/.vs
+[Bb]in/
+[Oo]bj/
+.vs/

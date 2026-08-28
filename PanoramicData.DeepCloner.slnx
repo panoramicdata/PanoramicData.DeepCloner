@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
@@ -7,6 +8,9 @@
     <File Path="publish.ps1" />
     <File Path="README.md" />
     <File Path="version.json" />
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="DeepCloner.Tests/PanoramicData.DeepCloner.Test.csproj" />
   <Project Path="DeepCloner/PanoramicData.DeepCloner.csproj" />
