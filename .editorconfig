@@ -22,3 +22,4 @@ indent_size = 2
 [*.cs]
 dotnet_sort_system_directives_first = true
 file_header_template = unset
+csharp_style_namespace_declarations = file_scoped:error
