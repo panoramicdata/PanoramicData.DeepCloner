@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://github.com/panoramicdata/PanoramicData.DeepCloner.git</PackageProjectUrl>
     <PackageIcon>Panoramic Data.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/panoramicData/PanoramicData.DeepCloner.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/panoramicdata/PanoramicData.DeepCloner.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>C#;deep clone;deep;clone;cloner</PackageTags>
     <PackageReleaseNotes>Initial release</PackageReleaseNotes>
