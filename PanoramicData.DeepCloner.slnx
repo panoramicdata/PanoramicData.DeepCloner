@@ -11,6 +11,8 @@
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="SECURITY.md" />
   </Folder>
   <Project Path="DeepCloner.Tests/PanoramicData.DeepCloner.Test.csproj" />
   <Project Path="DeepCloner/PanoramicData.DeepCloner.csproj" />
