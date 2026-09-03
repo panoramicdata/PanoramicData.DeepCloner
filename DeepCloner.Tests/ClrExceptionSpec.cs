@@ -1,14 +1,13 @@
 ﻿#nullable disable
 
 using FluentValidation;
-using NUnit.Framework;
+using Xunit;
 using PanoramicData.DeepCloner;
 using System;
 using System.Collections.Generic;
 
 namespace PanoramicData.DeepCloner.Test;
 
-[TestFixture]
 public class ClrExpectionSpec
 {
 	public sealed class ItemToBeCloned2 : BaseClassForTest2
@@ -83,19 +82,24 @@ public class ClrExpectionSpec
 		}
 	}
 
-	[Test]
-	[Repeat(1000)]
+	[Fact]
 	public void TestMethod2()
 	{
 		// typeof(ShallowObjectCloner).GetMethod("SwitchTo", BindingFlags.NonPublic | BindingFlags.Static)
 		//                          .Invoke(null, new object[] { true });
 
-		// ServiceStack.FluentValidation.AbstractValidator
-		var toBeCloned = new ItemToBeCloned2();
-		toBeCloned.Validate();
+		// Repeated to shake out the intermittent CLR crash this regression guards against.
+		// Was NUnit's [Repeat(1000)]; xUnit has no equivalent, and NUnit reported the
+		// repeated runs as a single test, so a loop keeps the test count unchanged.
+		for (var i = 0; i < 1000; i++)
+		{
+			// ServiceStack.FluentValidation.AbstractValidator
+			var toBeCloned = new ItemToBeCloned2();
+			toBeCloned.Validate();
 
-		var cloned = toBeCloned.DeepClone();
+			var cloned = toBeCloned.DeepClone();
 
-		Console.WriteLine(cloned);
+			Console.WriteLine(cloned);
+		}
 	}
 }

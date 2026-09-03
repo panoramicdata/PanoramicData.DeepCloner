@@ -1,39 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<DebugType>portable</DebugType>
-		<AssemblyName>DeepCloner.NET.Tests</AssemblyName>
-		<OutputType>Library</OutputType>
-		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-	</PropertyGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\DeepCloner\PanoramicData.DeepCloner.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-       <PackageReference Include="FluentValidation" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="NUnit" />
-		<PackageReference Include="NUnit3TestAdapter" />
-	<PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" PrivateAssets="all" /></ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
-     <PackageReference Include="Clone.Behave" />
-		<PackageReference Include="CloneExtensions" />
-		<PackageReference Include="GeorgeCloney" />
-		<PackageReference Include="NClone" />
-		<PackageReference Include="Nuclex.Cloning" />
-		<PackageReference Include="FastDeepCloner" />
-		<PackageReference Include="DesertOctopus" />
-		<PackageReference Include="EntityFramework" />
-		<PackageReference Include="ServiceStack" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-	</ItemGroup>
-	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>DeepCloner.NET.Tests</AssemblyName>
+    <!-- xunit.v3 runs on Microsoft.Testing.Platform, which requires an executable host. -->
+    <OutputType>Exe</OutputType>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeepCloner\PanoramicData.DeepCloner.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461'">
+    <PackageReference Include="Clone.Behave" />
+    <PackageReference Include="CloneExtensions" />
+    <PackageReference Include="GeorgeCloney" />
+    <PackageReference Include="NClone" />
+    <PackageReference Include="Nuclex.Cloning" />
+    <PackageReference Include="FastDeepCloner" />
+    <PackageReference Include="DesertOctopus" />
+    <PackageReference Include="EntityFramework" />
+    <PackageReference Include="ServiceStack" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 </Project>

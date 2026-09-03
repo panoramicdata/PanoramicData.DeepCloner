@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
-using NUnit.Framework;
-using NUnit.Framework.Legacy;
+using Xunit;
 using PanoramicData.DeepCloner;
 using System;
 using System.Collections.Generic;
@@ -11,74 +10,73 @@ using System.Text;
 
 namespace PanoramicData.DeepCloner.Test;
 
-[TestFixture(true)]
-public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
+public class ArraysSpec() : BaseTest(true)
 {
-	[Test]
+	[Fact]
 	public void IntArray_Should_Be_Cloned()
 	{
 		var arr = new[] { 1, 2, 3 };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(3));
-		CollectionAssert.AreEqual(arr, cloned);
+		Assert.Equal(3, cloned.Length);
+		Assert.Equal(arr, cloned);
 	}
 
-	[Test]
+	[Fact]
 	public void StringArray_Should_Be_Cloned()
 	{
 		var arr = new[] { "1", "2", "3" };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(3));
-		CollectionAssert.AreEqual(arr, cloned);
+		Assert.Equal(3, cloned.Length);
+		Assert.Equal(arr, cloned);
 	}
 
-	[Test]
+	[Fact]
 	public void StringArray_Should_Be_Cloned_Two_Arrays()
 	{
 		// checking that cached object correctly clones arrays of different length
 		var arr = new[] { "111111111111111111111", "2", "3" };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(3));
-		CollectionAssert.AreEqual(arr, cloned);
+		Assert.Equal(3, cloned.Length);
+		Assert.Equal(arr, cloned);
 		// strings should not be copied
-		Assert.That(ReferenceEquals(arr[1], cloned[1]), Is.True);
+		Assert.True(ReferenceEquals(arr[1], cloned[1]));
 
 		arr = ["1", "2", "3", "4"];
 		cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(4));
-		CollectionAssert.AreEqual(arr, cloned);
+		Assert.Equal(4, cloned.Length);
+		Assert.Equal(arr, cloned);
 
 		arr = [];
 		cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(0));
+		Assert.Empty(cloned);
 
 		if (1.Equals(1)) arr = null;
-		Assert.That(arr.DeepClone(), Is.Null);
+		Assert.Null(arr.DeepClone());
 	}
 
-	[Test]
+	[Fact]
 	public void StringArray_Casted_As_Object_Should_Be_Cloned()
 	{
 		// checking that cached object correctly clones arrays of different length
 		var arr = (object)new[] { "1", "2", "3" };
 		var cloned = arr.DeepClone() as string[];
-		Assert.That(cloned.Length, Is.EqualTo(3));
-		CollectionAssert.AreEqual((string[])arr, cloned);
+		Assert.Equal(3, cloned.Length);
+		Assert.Equal((string[])arr, cloned);
 		// strings should not be copied
-		Assert.That(ReferenceEquals(((string[])arr)[1], cloned[1]), Is.True);
+		Assert.True(ReferenceEquals(((string[])arr)[1], cloned[1]));
 	}
 
-	[Test]
+	[Fact]
 	public void ByteArray_Should_Be_Cloned()
 	{
 		// checking that cached object correctly clones arrays of different length
 		var arr = Encoding.ASCII.GetBytes("test");
 		var cloned = arr.DeepClone();
-		CollectionAssert.AreEqual(arr, cloned);
+		Assert.Equal(arr, cloned);
 
 		arr = Encoding.ASCII.GetBytes("test testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testte");
 		cloned = arr.DeepClone();
-		CollectionAssert.AreEqual(arr, cloned);
+		Assert.Equal(arr, cloned);
 	}
 
 	public class C1(int x)
@@ -86,16 +84,16 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		public int X { get; set; } = x;
 	}
 
-	[Test]
+	[Fact]
 	public void ClassArray_Should_Be_Cloned()
 	{
 		var arr = new[] { new C1(1), new C1(2) };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(2));
-		Assert.That(cloned[0].X, Is.EqualTo(1));
-		Assert.That(cloned[1].X, Is.EqualTo(2));
-		Assert.That(cloned[0], Is.Not.EqualTo(arr[0]));
-		Assert.That(cloned[1], Is.Not.EqualTo(arr[1]));
+		Assert.Equal(2, cloned.Length);
+		Assert.Equal(1, cloned[0].X);
+		Assert.Equal(2, cloned[1].X);
+		Assert.NotEqual(arr[0], cloned[0]);
+		Assert.NotEqual(arr[1], cloned[1]);
 	}
 
 	public struct S1(int x)
@@ -108,61 +106,61 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		public C1 C;
 	}
 
-	[Test]
+	[Fact]
 	public void StructArray_Should_Be_Cloned()
 	{
 		var arr = new[] { new S1(1), new S1(2) };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(2));
-		Assert.That(cloned[0].X, Is.EqualTo(1));
-		Assert.That(cloned[1].X, Is.EqualTo(2));
+		Assert.Equal(2, cloned.Length);
+		Assert.Equal(1, cloned[0].X);
+		Assert.Equal(2, cloned[1].X);
 	}
 
-	[Test]
+	[Fact]
 	public void StructArray_With_Class_Should_Be_Cloned()
 	{
 		var arr = new[] { new S2 { C = new C1(1) }, new S2 { C = new C1(2) } };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(2));
-		Assert.That(cloned[0].C.X, Is.EqualTo(1));
-		Assert.That(cloned[1].C.X, Is.EqualTo(2));
-		Assert.That(cloned[0].C, Is.Not.EqualTo(arr[0].C));
-		Assert.That(cloned[1].C, Is.Not.EqualTo(arr[1].C));
+		Assert.Equal(2, cloned.Length);
+		Assert.Equal(1, cloned[0].C.X);
+		Assert.Equal(2, cloned[1].C.X);
+		Assert.NotEqual(arr[0].C, cloned[0].C);
+		Assert.NotEqual(arr[1].C, cloned[1].C);
 	}
 
-	[Test]
+	[Fact]
 	public void NullArray_Should_Be_Cloned()
 	{
 		var arr = new C1[] { null, null };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Length, Is.EqualTo(2));
-		Assert.That(cloned[0], Is.Null);
-		Assert.That(cloned[1], Is.Null);
+		Assert.Equal(2, cloned.Length);
+		Assert.Null(cloned[0]);
+		Assert.Null(cloned[1]);
 	}
 
-	[Test]
+	[Fact]
 	public void NullAsArray_hould_Be_Cloned()
 	{
 		var arr = (int[])null;
 		// ReSharper disable ExpressionIsAlwaysNull
 		var cloned = arr.DeepClone();
 		// ReSharper restore ExpressionIsAlwaysNull
-		Assert.That(cloned, Is.Null);
+		Assert.Null(cloned);
 	}
 
-	[Test]
+	[Fact]
 	public void IntList_Should_Be_Cloned()
 	{
 		// TODO: better performance for this type
 		var arr = new List<int> { 1, 2, 3 };
 		var cloned = arr.DeepClone();
-		Assert.That(cloned.Count, Is.EqualTo(3));
-		Assert.That(cloned[0], Is.EqualTo(1));
-		Assert.That(cloned[1], Is.EqualTo(2));
-		Assert.That(cloned[2], Is.EqualTo(3));
+		Assert.Equal(3, cloned.Count);
+		Assert.Equal(1, cloned[0]);
+		Assert.Equal(2, cloned[1]);
+		Assert.Equal(3, cloned[2]);
 	}
 
-	[Test]
+	[Fact]
 	public void Dictionary_Should_Be_Cloned()
 	{
 		// TODO: better performance for this type
@@ -172,25 +170,25 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 			["b"] = 2
 		};
 		var cloned = d.DeepClone();
-		Assert.That(cloned.Count, Is.EqualTo(2));
-		Assert.That(cloned["a"], Is.EqualTo(1));
-		Assert.That(cloned["b"], Is.EqualTo(2));
+		Assert.Equal(2, cloned.Count);
+		Assert.Equal(1, cloned["a"]);
+		Assert.Equal(2, cloned["b"]);
 	}
 
-	[Test]
+	[Fact]
 	public void Array_Of_Same_Arrays_Should_Be_Cloned()
 	{
 		var c1 = new[] { 1, 2, 3 };
 		var arr = new[] { c1, c1, c1, c1, c1 };
 		var cloned = arr.DeepClone();
 
-		Assert.That(cloned.Length, Is.EqualTo(5));
+		Assert.Equal(5, cloned.Length);
 		// lot of objects for checking reference dictionary optimization
-		Assert.That(ReferenceEquals(arr[0], cloned[0]), Is.False);
-		Assert.That(ReferenceEquals(cloned[0], cloned[1]), Is.True);
-		Assert.That(ReferenceEquals(cloned[1], cloned[2]), Is.True);
-		Assert.That(ReferenceEquals(cloned[1], cloned[3]), Is.True);
-		Assert.That(ReferenceEquals(cloned[1], cloned[4]), Is.True);
+		Assert.False(ReferenceEquals(arr[0], cloned[0]));
+		Assert.True(ReferenceEquals(cloned[0], cloned[1]));
+		Assert.True(ReferenceEquals(cloned[1], cloned[2]));
+		Assert.True(ReferenceEquals(cloned[1], cloned[3]));
+		Assert.True(ReferenceEquals(cloned[1], cloned[4]));
 	}
 
 	public class AC
@@ -200,26 +198,26 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		public int[] B { get; set; }
 	}
 
-	[Test]
+	[Fact]
 	public void Class_With_Same_Arrays_Should_Be_Cloned()
 	{
 		var ac = new AC();
 		ac.A = ac.B = new int[3];
 		var clone = ac.DeepClone();
-		Assert.That(ReferenceEquals(ac.A, clone.A), Is.False);
-		Assert.That(ReferenceEquals(clone.A, clone.B), Is.True);
+		Assert.False(ReferenceEquals(ac.A, clone.A));
+		Assert.True(ReferenceEquals(clone.A, clone.B));
 	}
 
-	[Test]
+	[Fact]
 	public void Class_With_Null_Array_hould_Be_Cloned()
 	{
 		var ac = new AC();
 		var cloned = ac.DeepClone();
-		Assert.That(cloned.A, Is.Null);
-		Assert.That(cloned.B, Is.Null);
+		Assert.Null(cloned.A);
+		Assert.Null(cloned.B);
 	}
 
-	[Test]
+	[Fact]
 	public void MultiDim_Array_Should_Be_Cloned()
 	{
 		var arr = new int[2, 2];
@@ -228,14 +226,14 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		arr[1, 0] = 3;
 		arr[1, 1] = 4;
 		var clone = arr.DeepClone();
-		Assert.That(ReferenceEquals(arr, clone), Is.False);
-		Assert.That(clone[0, 0], Is.EqualTo(1));
-		Assert.That(clone[0, 1], Is.EqualTo(2));
-		Assert.That(clone[1, 0], Is.EqualTo(3));
-		Assert.That(clone[1, 1], Is.EqualTo(4));
+		Assert.False(ReferenceEquals(arr, clone));
+		Assert.Equal(1, clone[0, 0]);
+		Assert.Equal(2, clone[0, 1]);
+		Assert.Equal(3, clone[1, 0]);
+		Assert.Equal(4, clone[1, 1]);
 	}
 
-	[Test]
+	[Fact]
 	public void MultiDim_Array_Should_Be_Cloned2()
 	{
 		var arr = new int[2, 2, 1];
@@ -244,14 +242,14 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		arr[1, 0, 0] = 3;
 		arr[1, 1, 0] = 4;
 		var clone = arr.DeepClone();
-		Assert.That(ReferenceEquals(arr, clone), Is.False);
-		Assert.That(clone[0, 0, 0], Is.EqualTo(1));
-		Assert.That(clone[0, 1, 0], Is.EqualTo(2));
-		Assert.That(clone[1, 0, 0], Is.EqualTo(3));
-		Assert.That(clone[1, 1, 0], Is.EqualTo(4));
+		Assert.False(ReferenceEquals(arr, clone));
+		Assert.Equal(1, clone[0, 0, 0]);
+		Assert.Equal(2, clone[0, 1, 0]);
+		Assert.Equal(3, clone[1, 0, 0]);
+		Assert.Equal(4, clone[1, 1, 0]);
 	}
 
-	[Test]
+	[Fact]
 	public void MultiDim_Array_Should_Be_Cloned3()
 	{
 		const int cnt1 = 4;
@@ -263,26 +261,26 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 				for (var i3 = 0; i3 < cnt3; i3++)
 					arr[i1, i2, i3] = i1 * 100 + i2 * 10 + i3;
 		var clone = arr.DeepClone();
-		Assert.That(ReferenceEquals(arr, clone), Is.False);
+		Assert.False(ReferenceEquals(arr, clone));
 		for (var i1 = 0; i1 < cnt1; i1++)
 			for (var i2 = 0; i2 < cnt2; i2++)
 				for (var i3 = 0; i3 < cnt3; i3++)
-					Assert.That(arr[i1, i2, i3], Is.EqualTo(i1 * 100 + i2 * 10 + i3));
+					Assert.Equal(i1 * 100 + i2 * 10 + i3, arr[i1, i2, i3]);
 	}
 
-	[Test]
+	[Fact]
 	public void MultiDim_Array_Of_Classes_Should_Be_Cloned()
 	{
 		var arr = new AC[2, 2];
 		arr[0, 0] = arr[1, 1] = new AC();
 		var clone = arr.DeepClone();
-		Assert.That(clone[0, 0], Is.Not.Null);
-		Assert.That(clone[1, 1], Is.Not.Null);
-		Assert.That(clone[1, 1], Is.EqualTo(clone[0, 0]));
-		Assert.That(clone[1, 1], Is.Not.EqualTo(arr[0, 0]));
+		Assert.NotNull(clone[0, 0]);
+		Assert.NotNull(clone[1, 1]);
+		Assert.Equal(clone[0, 0], clone[1, 1]);
+		Assert.NotEqual(arr[0, 0], clone[1, 1]);
 	}
 
-	[Test]
+	[Fact]
 	public void NonZero_Based_Array_Should_Be_Cloned()
 	{
 		var arr = Array.CreateInstance(typeof(int), [2], [1]);
@@ -290,11 +288,11 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		arr.SetValue(1, 1);
 		arr.SetValue(2, 2);
 		var clone = arr.DeepClone();
-		Assert.That(clone.GetValue(1), Is.EqualTo(1));
-		Assert.That(clone.GetValue(2), Is.EqualTo(2));
+		Assert.Equal(1, clone.GetValue(1));
+		Assert.Equal(2, clone.GetValue(2));
 	}
 
-	[Test]
+	[Fact]
 	public void NonZero_Based_MultiDim_Array_Should_Be_Cloned()
 	{
 		var arr = Array.CreateInstance(typeof(int), [2, 2], [1, 1]);
@@ -302,37 +300,37 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		arr.SetValue(1, 1, 1);
 		arr.SetValue(2, 2, 2);
 		var clone = arr.DeepClone();
-		Assert.That(clone.GetValue(1, 1), Is.EqualTo(1));
-		Assert.That(clone.GetValue(2, 2), Is.EqualTo(2));
+		Assert.Equal(1, clone.GetValue(1, 1));
+		Assert.Equal(2, clone.GetValue(2, 2));
 	}
 
-	[Test]
+	[Fact]
 	public void Array_As_Generic_Array_Should_Be_Cloned()
 	{
 		var arr = new[] { 1, 2, 3 };
 		var genArr = (Array)arr;
 		var clone = (int[])genArr.DeepClone();
-		Assert.That(clone.Length, Is.EqualTo(3));
-		Assert.That(clone[0], Is.EqualTo(1));
-		Assert.That(clone[1], Is.EqualTo(2));
-		Assert.That(clone[2], Is.EqualTo(3));
+		Assert.Equal(3, clone.Length);
+		Assert.Equal(1, clone[0]);
+		Assert.Equal(2, clone[1]);
+		Assert.Equal(3, clone[2]);
 	}
 
-	[Test]
+	[Fact]
 	public void Array_As_IEnumerable_Should_Be_Cloned()
 	{
 		var arr = new[] { 1, 2, 3 };
 		var genArr = (IEnumerable<int>)arr;
 		var clone = (int[])genArr.DeepClone();
 		// ReSharper disable PossibleMultipleEnumeration
-		Assert.That(clone.Length, Is.EqualTo(3));
-		Assert.That(clone[0], Is.EqualTo(1));
-		Assert.That(clone[1], Is.EqualTo(2));
-		Assert.That(clone[2], Is.EqualTo(3));
+		Assert.Equal(3, clone.Length);
+		Assert.Equal(1, clone[0]);
+		Assert.Equal(2, clone[1]);
+		Assert.Equal(3, clone[2]);
 		// ReSharper restore PossibleMultipleEnumeration
 	}
 
-	[Test]
+	[Fact]
 	public void MultiDimensional_Array_Should_Be_Cloned()
 	{
 		// Issue #25
@@ -348,25 +346,30 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		Array.CreateInstance(typeof(int), [1, 1, 1]).DeepClone();
 	}
 
-	[Test]
+	[Fact]
 	public void Issue_17_Spec()
 	{
+		// Deliberately asserting through each set's own Contains: it honours the set's
+		// comparer, which is what this regression test is about. Assert.Contains would
+		// use the default comparer instead, so xUnit2017 is suppressed here.
+#pragma warning disable xUnit2017
 		var set = new HashSet<string> { "value" };
-		Assert.That(set.Contains("value"), Is.True);
+		Assert.True(set.Contains("value"));
 
 		var cloned = set.DeepClone();
-		Assert.That(cloned.Contains("value"), Is.True);
+		Assert.True(cloned.Contains("value"));
 
 		var copyOfSet = new HashSet<string>(set, set.Comparer);
-		Assert.That(copyOfSet.Contains("value"), Is.True);
+		Assert.True(copyOfSet.Contains("value"));
 
 		var copyOfCloned = new HashSet<string>(cloned, cloned.Comparer);
-		Assert.That(copyOfCloned.ToArray()[0] == "value", Is.True);
+		Assert.True(copyOfCloned.ToArray()[0] == "value");
 
-		Assert.That(copyOfCloned.Contains("value"), Is.True);
+		Assert.True(copyOfCloned.Contains("value"));
+#pragma warning restore xUnit2017
 	}
 
-	[Test]
+	[Fact]
 	public void Check_Comparer_Cloning()
 	{
 		Check_Comparer_does_Clone_Internal<string>();
@@ -379,13 +382,13 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		Check_Comparer_does_not_Clone_Internal<int?>();
 		Check_Comparer_does_not_Clone_Internal<HashSet<int>>();
 
-		Assert.That(StringComparer.Ordinal == StringComparer.Ordinal.DeepClone(), Is.True);
-		Assert.That(StringComparer.InvariantCulture == StringComparer.InvariantCulture.DeepClone(), Is.True);
-		Assert.That(StringComparer.InvariantCultureIgnoreCase == StringComparer.InvariantCultureIgnoreCase.DeepClone(), Is.True);
+		Assert.True(StringComparer.Ordinal == StringComparer.Ordinal.DeepClone());
+		Assert.True(StringComparer.InvariantCulture == StringComparer.InvariantCulture.DeepClone());
+		Assert.True(StringComparer.InvariantCultureIgnoreCase == StringComparer.InvariantCultureIgnoreCase.DeepClone());
 
-		Assert.That(StringComparer.OrdinalIgnoreCase == StringComparer.OrdinalIgnoreCase.DeepClone(), Is.False);
-		Assert.That(StringComparer.CurrentCulture == StringComparer.CurrentCulture.DeepClone(), Is.False);
-		Assert.That(StringComparer.CurrentCultureIgnoreCase == StringComparer.CurrentCultureIgnoreCase.DeepClone(), Is.False);
+		Assert.False(StringComparer.OrdinalIgnoreCase == StringComparer.OrdinalIgnoreCase.DeepClone());
+		Assert.False(StringComparer.CurrentCulture == StringComparer.CurrentCulture.DeepClone());
+		Assert.False(StringComparer.CurrentCultureIgnoreCase == StringComparer.CurrentCultureIgnoreCase.DeepClone());
 	}
 
 	private void Check_Comparer_does_Clone_Internal<T>()
@@ -394,7 +397,7 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		var cloned = comparer.DeepClone();
 
 		// checking by reference
-		Assert.That(comparer == cloned, Is.False);
+		Assert.False(comparer == cloned);
 	}
 
 	private void Check_Comparer_does_not_Clone_Internal<T>()
@@ -403,6 +406,6 @@ public class ArraysSpec(object isSafeInit) : BaseTest((bool)isSafeInit)
 		var cloned = comparer.DeepClone();
 
 		// checking by reference
-		Assert.That(comparer == cloned, Is.True);
+		Assert.True(comparer == cloned);
 	}
 }
