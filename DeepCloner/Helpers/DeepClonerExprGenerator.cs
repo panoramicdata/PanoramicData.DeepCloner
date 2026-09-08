@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +12,9 @@ internal static class DeepClonerExprGenerator
 	private static readonly ConcurrentDictionary<FieldInfo, bool> _readonlyFields = new ConcurrentDictionary<FieldInfo, bool>();
 	private static readonly MethodInfo _addKnownRefMethod = typeof(DeepCloneState).GetMethod(nameof(DeepCloneState.AddKnownRef))!;
 
-    #pragma warning disable CA1805
-	private static readonly bool _canFastCopyReadonlyFields = false;
-	#pragma warning restore CA1805
+	#pragma warning disable CS0649
+	private static readonly bool _canFastCopyReadonlyFields;
+	#pragma warning restore CS0649
 
  private static readonly MethodInfo? _fieldSetMethod;
 	static DeepClonerExprGenerator()
@@ -27,9 +27,6 @@ internal static class DeepClonerExprGenerator
 #else
 			_fieldSetMethod = typeof(FieldInfo).GetMethod("SetValue", new[] { typeof(object), typeof(object) });
 #endif
-
-			if (_fieldSetMethod == null)
-				throw new ArgumentNullException();
 		}
 		catch (Exception)
 		{
@@ -54,10 +51,14 @@ internal static class DeepClonerExprGenerator
 		// TODO: think about it
 		// nothing to do :( we should a throw an exception, but it is no good for user
 		if (fieldInfo == null)
+		{
 			return;
+		}
 		var ov = fieldInfo.GetValue(field);
 		if (!(ov is FieldAttributes))
+		{
 			return;
+		}
 		var v = (FieldAttributes)ov;
 
 		// protect from parallel execution, when first thread set field readonly back, and second set it to write value
@@ -76,19 +77,9 @@ internal static class DeepClonerExprGenerator
 			return GenerateProcessArrayMethod(type);
 		}
 
-     if (type.FullName != null && type.FullName.StartsWith("System.Tuple`", StringComparison.Ordinal))
+		if (IsCloneableTuple(type))
 		{
-			// if not safe type it is no guarantee that some type will contain reference to
-			// this tuple. In usual way, we're creating new object, setting reference for it
-			// and filling data. For tuple, we will fill data before creating object
-			// (in constructor arguments)
-			var genericArguments = type.GenericArguments();
-			// current tuples contain only 8 arguments, but may be in future...
-			// we'll write code that works with it
-			if (genericArguments.Length < 10 && genericArguments.All(DeepClonerSafeTypes.CanReturnSameObject))
-			{
-				return GenerateProcessTupleMethod(type);
-			}
+			return GenerateProcessTupleMethod(type);
 		}
 
 		var methodType = unboxStruct || type.IsClass() ? typeof(object) : type;
@@ -96,99 +87,22 @@ internal static class DeepClonerExprGenerator
 		var expressionList = new List<Expression>();
 
 		ParameterExpression from = Expression.Parameter(methodType);
-		var fromLocal = from;
+		ParameterExpression fromLocal = from;
 		var toLocal = Expression.Variable(type);
 		var state = Expression.Parameter(typeof(DeepCloneState));
 
 		if (!type.IsValueType())
 		{
-            var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone")!;
-
-			// to = (T)from.MemberwiseClone()
-			expressionList.Add(Expression.Assign(toLocal, Expression.Convert(Expression.Call(from, methodInfo), type)));
-
-			fromLocal = Expression.Variable(type);
-			// fromLocal = (T)from
-			expressionList.Add(Expression.Assign(fromLocal, Expression.Convert(from, type)));
-
-			// added from -> to binding to ensure reference loop handling
-			// structs cannot loop here
-			// state.AddKnownRef(from, to)
-         expressionList.Add(Expression.Call(state, _addKnownRefMethod, from, toLocal));
+			AddClassInitialisation(expressionList, type, from, toLocal, state, ref fromLocal);
 		}
 		else
 		{
-			if (unboxStruct)
-			{
-				// toLocal = (T)from;
-				expressionList.Add(Expression.Assign(toLocal, Expression.Unbox(from, type)));
-				fromLocal = Expression.Variable(type);
-				// fromLocal = toLocal; // structs, it is ok to copy
-				expressionList.Add(Expression.Assign(fromLocal, toLocal));
-			}
-			else
-			{
-				// toLocal = from
-				expressionList.Add(Expression.Assign(toLocal, from));
-			}
+			AddStructInitialisation(expressionList, type, unboxStruct, from, toLocal, ref fromLocal);
 		}
 
-		List<FieldInfo> fi = new List<FieldInfo>();
-		var tp = type;
-		do
+		foreach (var fieldInfo in GetInheritedFields(type))
 		{
-#if !NETCORE
-			// don't do anything with this dark magic!
-			if (tp == typeof(ContextBoundObject)) break;
-#else
-			if (tp.Name == "ContextBoundObject") break;
-#endif
-
-			fi.AddRange(tp.GetDeclaredFields());
-			tp = tp.BaseType();
-		}
-		while (tp != null);
-
-		foreach (var fieldInfo in fi)
-		{
-			if (!DeepClonerSafeTypes.CanReturnSameObject(fieldInfo.FieldType))
-			{
-              var methodInfo = fieldInfo.FieldType.IsValueType()
-									? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")!
-															.MakeGenericMethod(fieldInfo.FieldType)
-									: typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneClassInternal")!;
-
-				var get = Expression.Field(fromLocal, fieldInfo);
-
-				// toLocal.Field = Clone...Internal(fromLocal.Field)
-				var call = (Expression)Expression.Call(methodInfo, get, state);
-				if (!fieldInfo.FieldType.IsValueType())
-					call = Expression.Convert(call, fieldInfo.FieldType);
-
-				// should handle specially
-				// todo: think about optimization, but it rare case
-				var isReadonly = _readonlyFields.GetOrAdd(fieldInfo, f => f.IsInitOnly);
-				if (isReadonly)
-				{
-					if (_canFastCopyReadonlyFields)
-					{
-						expressionList.Add(Expression.Call(
-							Expression.Constant(fieldInfo),
-                            _fieldSetMethod!,
-							Expression.Convert(toLocal, typeof(object)),
-							Expression.Convert(call, typeof(object))));
-					}
-					else
-					{
-                        var setMethod = typeof(DeepClonerExprGenerator).GetPrivateStaticMethod("ForceSetField")!;
-						expressionList.Add(Expression.Call(setMethod, Expression.Constant(fieldInfo), Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object))));
-					}
-				}
-				else
-				{
-					expressionList.Add(Expression.Assign(Expression.Field(toLocal, fieldInfo), call));
-				}
-			}
+			AddFieldCloneExpression(expressionList, fieldInfo, fromLocal, toLocal, state);
 		}
 
 		expressionList.Add(Expression.Convert(toLocal, methodType));
@@ -196,10 +110,136 @@ internal static class DeepClonerExprGenerator
 		var funcType = typeof(Func<,,>).MakeGenericType(methodType, typeof(DeepCloneState), methodType);
 
 		var blockParams = new List<ParameterExpression>();
-		if (from != fromLocal) blockParams.Add(fromLocal);
+		if (from != fromLocal)
+		{
+			blockParams.Add(fromLocal);
+		}
 		blockParams.Add(toLocal);
 
 		return Expression.Lambda(funcType, Expression.Block(blockParams, expressionList), from, state).Compile();
+	}
+
+	private static bool IsCloneableTuple(Type type)
+	{
+		if (type.FullName == null || !type.FullName.StartsWith("System.Tuple`", StringComparison.Ordinal))
+		{
+			return false;
+		}
+
+		// if not safe type it is no guarantee that some type will contain reference to
+		// this tuple. In usual way, we're creating new object, setting reference for it
+		// and filling data. For tuple, we will fill data before creating object
+		// (in constructor arguments)
+		var genericArguments = type.GenericArguments();
+		// current tuples contain only 8 arguments, but may be in future...
+		// we'll write code that works with it
+		return genericArguments.Length < 10 && genericArguments.All(DeepClonerSafeTypes.CanReturnSameObject);
+	}
+
+	private static void AddClassInitialisation(List<Expression> expressionList, Type type, Expression from, Expression toLocal, Expression state, ref ParameterExpression fromLocal)
+	{
+        var methodInfo = typeof(object).GetPrivateMethod("MemberwiseClone")!;
+
+		// to = (T)from.MemberwiseClone()
+		expressionList.Add(Expression.Assign(toLocal, Expression.Convert(Expression.Call(from, methodInfo), type)));
+
+		fromLocal = Expression.Variable(type);
+		// fromLocal = (T)from
+		expressionList.Add(Expression.Assign(fromLocal, Expression.Convert(from, type)));
+
+		// added from -> to binding to ensure reference loop handling
+		// structs cannot loop here
+         expressionList.Add(Expression.Call(state, _addKnownRefMethod, from, toLocal));
+	}
+
+	private static void AddStructInitialisation(List<Expression> expressionList, Type type, bool unboxStruct, Expression from, Expression toLocal, ref ParameterExpression fromLocal)
+	{
+		if (unboxStruct)
+		{
+			expressionList.Add(Expression.Assign(toLocal, Expression.Unbox(from, type)));
+			fromLocal = Expression.Variable(type);
+			expressionList.Add(Expression.Assign(fromLocal, toLocal));
+		}
+		else
+		{
+			// toLocal = from
+			expressionList.Add(Expression.Assign(toLocal, from));
+		}
+	}
+
+	private static List<FieldInfo> GetInheritedFields(Type type)
+	{
+		List<FieldInfo> fi = new List<FieldInfo>();
+		var tp = type;
+		do
+		{
+#if !NETCORE
+			// don't do anything with this dark magic!
+			if (tp == typeof(ContextBoundObject))
+			{
+				break;
+			}
+#else
+			if (tp.Name == "ContextBoundObject")
+			{
+				break;
+			}
+#endif
+
+			fi.AddRange(tp.GetDeclaredFields());
+			tp = tp.BaseType();
+		}
+		while (tp != null);
+
+		return fi;
+	}
+
+	private static void AddFieldCloneExpression(List<Expression> expressionList, FieldInfo fieldInfo, Expression fromLocal, Expression toLocal, Expression state)
+	{
+		if (DeepClonerSafeTypes.CanReturnSameObject(fieldInfo.FieldType))
+		{
+			return;
+		}
+
+       var methodInfo = fieldInfo.FieldType.IsValueType()
+								? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")!
+										.MakeGenericMethod(fieldInfo.FieldType)
+								: typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneClassInternal")!;
+
+		var get = Expression.Field(fromLocal, fieldInfo);
+
+		// toLocal.Field = Clone...Internal(fromLocal.Field)
+		var call = (Expression)Expression.Call(methodInfo, get, state);
+		if (!fieldInfo.FieldType.IsValueType())
+		{
+			call = Expression.Convert(call, fieldInfo.FieldType);
+		}
+
+		// should handle specially
+		// todo: think about optimization, but it rare case
+		var isReadonly = _readonlyFields.GetOrAdd(fieldInfo, f => f.IsInitOnly);
+		var fieldConstant = Expression.Constant(fieldInfo);
+		if (isReadonly)
+		{
+			if (_canFastCopyReadonlyFields)
+			{
+				expressionList.Add(BuildSetFieldCall(_fieldSetMethod!, fieldConstant, toLocal, call));
+			}
+			else
+			{
+                var setMethod = typeof(DeepClonerExprGenerator).GetPrivateStaticMethod("ForceSetField")!;
+				expressionList.Add(BuildSetFieldCall(setMethod, fieldConstant, toLocal, call));
+			}
+		}
+		else
+		{
+			expressionList.Add(Expression.Assign(Expression.Field(toLocal, fieldInfo), call));
+		}
+	}
+
+	private static MethodCallExpression BuildSetFieldCall(MethodInfo setMethod, Expression fieldConstant, Expression toLocal, Expression call)
+	{
+		return Expression.Call(setMethod, fieldConstant, Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object)));
 	}
 
 	private static object GenerateProcessArrayMethod(Type type)
@@ -225,8 +265,14 @@ internal static class DeepClonerExprGenerator
 		else
 		{
 			var methodName = "Clone1DimArrayClassInternal";
-			if (DeepClonerSafeTypes.CanReturnSameObject(elementType)) methodName = "Clone1DimArraySafeInternal";
-			else if (elementType.IsValueType()) methodName = "Clone1DimArrayStructInternal";
+			if (DeepClonerSafeTypes.CanReturnSameObject(elementType))
+			{
+				methodName = "Clone1DimArraySafeInternal";
+			}
+			else if (elementType.IsValueType())
+			{
+				methodName = "Clone1DimArrayStructInternal";
+			}
          methodInfo = typeof(DeepClonerGenerator).GetPrivateStaticMethod(methodName)!.MakeGenericMethod(elementType);
 		}
 

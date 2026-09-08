@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace PanoramicData.DeepCloner.Helpers;
@@ -16,11 +16,13 @@ internal sealed class DeepCloneState
 		// this is faster than call Dictionary from begin
 		// also, small poco objects does not have a lot of references
 		var baseFromTo = _baseFromTo;
-		if (ReferenceEquals(from, baseFromTo[0])) return baseFromTo[3];
-		if (ReferenceEquals(from, baseFromTo[1])) return baseFromTo[4];
-		if (ReferenceEquals(from, baseFromTo[2])) return baseFromTo[5];
+		if (ReferenceEquals(from, baseFromTo[0])) { return baseFromTo[3]; }
+		if (ReferenceEquals(from, baseFromTo[1])) { return baseFromTo[4]; }
+		if (ReferenceEquals(from, baseFromTo[2])) { return baseFromTo[5]; }
 		if (_loops == null)
+		{
 			return null;
+		}
 
 		return _loops.FindEntry(from);
 	}
@@ -36,18 +38,38 @@ internal sealed class DeepCloneState
 		}
 
 		if (_loops == null)
+		{
 			_loops = new MiniDictionary();
+		}
 		_loops.Insert(from, to);
 	}
 
     private sealed class MiniDictionary
 	{
-		private struct Entry
+		private struct Entry : IEquatable<Entry>
 		{
 			public int HashCode;
 			public int Next;
 			public object Key;
 			public object Value;
+
+			public bool Equals(Entry other)
+			{
+				return HashCode == other.HashCode
+					&& Next == other.Next
+					&& ReferenceEquals(Key, other.Key)
+					&& ReferenceEquals(Value, other.Value);
+			}
+
+			public override bool Equals(object? obj)
+			{
+				return obj is Entry other && Equals(other);
+			}
+
+			public override int GetHashCode()
+			{
+				return HashCode;
+			}
 		}
 
      private int[]? _buckets;
@@ -62,7 +84,9 @@ internal sealed class DeepCloneState
 		public MiniDictionary(int capacity)
 		{
 			if (capacity > 0)
+			{
 				Initialize(capacity);
+			}
 		}
 
      public object? FindEntry(object key)
@@ -74,7 +98,9 @@ internal sealed class DeepCloneState
 				for (var i = _buckets[hashCode % _buckets.Length]; i >= 0; i = entries1[i].Next)
 				{
 					if (entries1[i].HashCode == hashCode && ReferenceEquals(entries1[i].Key, key))
+					{
 						return entries1[i].Value;
+					}
 				}
 			}
 
@@ -95,15 +121,17 @@ internal sealed class DeepCloneState
 			for (var i = 0; i < _primes.Length; i++)
 			{
 				var prime = _primes[i];
-				if (prime >= min) return prime;
+				if (prime >= min) { return prime; }
 			}
 
-			//outside of our predefined table. 
-			//compute the hard way. 
+			//outside of our predefined table.
+			//compute the hard way.
 			for (var i = min | 1; i < int.MaxValue; i += 2)
 			{
 				if (IsPrime(i) && (i - 1) % 101 != 0)
+				{
 					return i;
+				}
 			}
 
 			return min;
@@ -117,7 +145,9 @@ internal sealed class DeepCloneState
 				for (var divisor = 3; divisor <= limit; divisor += 2)
 				{
 					if (candidate % divisor == 0)
+					{
 						return false;
+					}
 				}
 
 				return true;
@@ -142,44 +172,46 @@ internal sealed class DeepCloneState
 		{
 			_buckets = new int[size];
 			for (int i = 0; i < _buckets.Length; i++)
+			{
 				_buckets[i] = -1;
+			}
 			_entries = new Entry[size];
 		}
 
 		public void Insert(object key, object value)
 		{
-			if (_buckets == null) Initialize(0);
+			EnsureInitialized();
 			var hashCode = RuntimeHelpers.GetHashCode(key) & 0x7FFFFFFF;
-          var targetBucket = hashCode % _buckets!.Length;
-
-            var entries1 = _entries!;
-
-			// we're always checking for entry before adding new
-			// so this loop is useless
-			/*for (var i = _buckets[targetBucket]; i >= 0; i = entries1[i].Next)
-			{
-				if (entries1[i].HashCode == hashCode && ReferenceEquals(entries1[i].Key, key))
-				{
-					entries1[i].Value = value;
-					return;
-				}
-			}*/
-
-			if (_count == entries1.Length)
-			{
-				Resize();
-                entries1 = _entries!;
-              targetBucket = hashCode % _buckets!.Length;
-			}
+			var targetBucket = EnsureCapacity(hashCode);
+			var entries1 = _entries!;
 
 			var index = _count;
 			_count++;
 
 			entries1[index].HashCode = hashCode;
-			entries1[index].Next = _buckets[targetBucket];
+			entries1[index].Next = _buckets![targetBucket];
 			entries1[index].Key = key;
 			entries1[index].Value = value;
 			_buckets[targetBucket] = index;
+		}
+
+		private void EnsureInitialized()
+		{
+			if (_buckets == null)
+			{
+				Initialize(0);
+			}
+		}
+
+		private int EnsureCapacity(int hashCode)
+		{
+			var targetBucket = hashCode % _buckets!.Length;
+			if (_count == _entries!.Length)
+			{
+				Resize();
+				targetBucket = hashCode % _buckets!.Length;
+			}
+			return targetBucket;
 		}
 
 		private void Resize()
@@ -191,7 +223,9 @@ internal sealed class DeepCloneState
 		{
 			var newBuckets = new int[newSize];
 			for (int i = 0; i < newBuckets.Length; i++)
+			{
 				newBuckets[i] = -1;
+			}
 			var newEntries = new Entry[newSize];
          Array.Copy(_entries!, 0, newEntries, 0, _count);
 

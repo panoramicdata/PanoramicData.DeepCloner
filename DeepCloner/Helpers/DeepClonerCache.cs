@@ -1,4 +1,4 @@
-﻿#nullable disable
+#nullable disable
 
 using System;
 using System.Collections.Concurrent;
@@ -17,16 +17,18 @@ internal static class DeepClonerCache
 
 	private static readonly ConcurrentDictionary<Tuple<Type, Type>, object> _typeConvertCache = new ConcurrentDictionary<Tuple<Type, Type>, object>();
 
+	private static readonly object _cacheLock = new object();
+
 	public static object GetOrAddClass<T>(Type type, Func<Type, T> adder)
 	{
-		// return _typeCache.GetOrAdd(type, x => adder(x));
-
-		// this implementation is slightly faster than getoradd
 		object value;
-		if (_typeCache.TryGetValue(type, out value)) return value;
+		if (_typeCache.TryGetValue(type, out value))
+		{
+			return value;
+		}
 
-		// will lock by type object to ensure only one type generator is generated simultaneously
-		lock (type)
+		// will lock to ensure only one type generator is generated simultaneously
+		lock (_cacheLock)
 		{
 			value = _typeCache.GetOrAdd(type, t => adder(t));
 		}
@@ -37,10 +39,13 @@ internal static class DeepClonerCache
 	public static object GetOrAddDeepClassTo<T>(Type type, Func<Type, T> adder)
 	{
 		object value;
-		if (_typeCacheDeepTo.TryGetValue(type, out value)) return value;
+		if (_typeCacheDeepTo.TryGetValue(type, out value))
+		{
+			return value;
+		}
 
-		// will lock by type object to ensure only one type generator is generated simultaneously
-		lock (type)
+		// will lock to ensure only one type generator is generated simultaneously
+		lock (_cacheLock)
 		{
 			value = _typeCacheDeepTo.GetOrAdd(type, t => adder(t));
 		}
@@ -51,10 +56,13 @@ internal static class DeepClonerCache
 	public static object GetOrAddShallowClassTo<T>(Type type, Func<Type, T> adder)
 	{
 		object value;
-		if (_typeCacheShallowTo.TryGetValue(type, out value)) return value;
+		if (_typeCacheShallowTo.TryGetValue(type, out value))
+		{
+			return value;
+		}
 
-		// will lock by type object to ensure only one type generator is generated simultaneously
-		lock (type)
+		// will lock to ensure only one type generator is generated simultaneously
+		lock (_cacheLock)
 		{
 			value = _typeCacheShallowTo.GetOrAdd(type, t => adder(t));
 		}
@@ -64,14 +72,14 @@ internal static class DeepClonerCache
 
 	public static object GetOrAddStructAsObject<T>(Type type, Func<Type, T> adder)
 	{
-		// return _typeCache.GetOrAdd(type, x => adder(x));
-
-		// this implementation is slightly faster than getoradd
 		object value;
-		if (_structAsObjectCache.TryGetValue(type, out value)) return value;
+		if (_structAsObjectCache.TryGetValue(type, out value))
+		{
+			return value;
+		}
 
-		// will lock by type object to ensure only one type generator is generated simultaneously
-		lock (type)
+		// will lock to ensure only one type generator is generated simultaneously
+		lock (_cacheLock)
 		{
 			value = _structAsObjectCache.GetOrAdd(type, t => adder(t));
 		}
