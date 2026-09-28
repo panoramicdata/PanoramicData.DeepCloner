@@ -96,9 +96,11 @@ public class SystemTypesSpec() : BaseTest(true)
 		Assert.NotSame(cert, cloned);
 		Assert.Equal(cert.Thumbprint, cloned.Thumbprint);
 		cert.DeepClone();
-		GC.Collect(); // NOSONAR S1215: deliberate, forcing finalization is what this test exercises
+#pragma warning disable S1215 // Deliberate: forcing finalization is what this test exercises.
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
-		GC.Collect(); // NOSONAR S1215: deliberate, forcing finalization is what this test exercises
+		GC.Collect();
+#pragma warning restore S1215
 	}
 
 	// Without special handling it causes exception on destruction due native resources usage
@@ -112,9 +114,11 @@ public class SystemTypesSpec() : BaseTest(true)
 		Assert.NotSame(cert, cloned);
 		Assert.Equal(cert.Thumbprint, cloned.Thumbprint);
 		cert.ShallowClone();
-		GC.Collect(); // NOSONAR S1215: deliberate, forcing finalization is what this test exercises
+#pragma warning disable S1215 // Deliberate: forcing finalization is what this test exercises.
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
-		GC.Collect(); // NOSONAR S1215: deliberate, forcing finalization is what this test exercises
+		GC.Collect();
+#pragma warning restore S1215
 	}
 
 	// SafeHandle (a CriticalFinalizerObject) owns a native handle, so it must never be copied.
@@ -129,8 +133,10 @@ public class SystemTypesSpec() : BaseTest(true)
 		var clonedEvent = ev.DeepClone();
 		Assert.NotSame(ev, clonedEvent);
 		Assert.Same(handle, clonedEvent.SafeWaitHandle);
-		GC.Collect(); // NOSONAR S1215: deliberate, forcing finalization is what this test exercises
+#pragma warning disable S1215 // Deliberate: forcing finalization is what this test exercises.
+		GC.Collect();
 		GC.WaitForPendingFinalizers();
-		GC.Collect(); // NOSONAR S1215: deliberate, forcing finalization is what this test exercises
+		GC.Collect();
+#pragma warning restore S1215
 	}
 }
