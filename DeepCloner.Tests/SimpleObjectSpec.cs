@@ -272,7 +272,8 @@ public class SimpleObjectSpec() : BaseTest(true)
 	public class EmptyClass { }
 
 	// Empty class does not have any mutable properties, so, it safe to use same class in cloning
-	[Fact(Skip = "Think about logic, which is better to clone or not to clone, I do not know, but it changes current logic seriously")]
+	// Explicit (keep, but do not run by default): an open upstream design question, and returning the same instance for a field-less object (e.g. new object() used as a lock) would make clones share a lock.
+	[Fact(Explicit = true)]
 	// e.g. new object() frequently use for locks - if we leave same object - we'll receive same lock in different classes
 	// todo: think about another reasons
 	public void Empty_Should_Not_Be_Cloned()

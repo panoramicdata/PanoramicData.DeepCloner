@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.ConstrainedExecution;
 
 namespace PanoramicData.DeepCloner.Helpers;
 
@@ -92,6 +93,21 @@ internal static class DeepClonerSafeTypes
         }
 
         if (fullName == "Microsoft.EntityFrameworkCore.Internal.ConcurrencyDetector")
+        {
+            return true;
+        }
+
+        // Types derived from CriticalFinalizerObject (SafeHandle and its subclasses) own a native resource.
+        // A memberwise copy is a second, independently reference-counted owner of the same OS handle, so
+        // both copies release it when finalized or disposed: a double free, which crashes the process
+        // (for example, deep-cloning an X509Certificate2). Share them instead of copying them.
+        if (typeof(CriticalFinalizerObject).IsAssignableFrom(type))
+        {
+            return true;
+        }
+
+        // Better not to do anything with COM objects either.
+        if (type.IsCOMObject)
         {
             return true;
         }
