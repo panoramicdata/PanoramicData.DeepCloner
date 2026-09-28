@@ -223,23 +223,29 @@ internal static class DeepClonerExprGenerator
 		{
 			if (_canFastCopyReadonlyFields)
 			{
-				expressionList.Add(BuildSetFieldCall(_fieldSetMethod!, fieldConstant, toLocal, call));
+				// fieldInfo.SetValue(toLocal, value): FieldInfo.SetValue is an INSTANCE method, so the
+				// FieldInfo constant is the call target, not the first argument.
+				expressionList.Add(Expression.Call(
+					fieldConstant,
+					_fieldSetMethod!,
+					Expression.Convert(toLocal, typeof(object)),
+					Expression.Convert(call, typeof(object))));
 			}
 			else
 			{
                 var setMethod = typeof(DeepClonerExprGenerator).GetPrivateStaticMethod("ForceSetField")!;
-				expressionList.Add(BuildSetFieldCall(setMethod, fieldConstant, toLocal, call));
+				// ForceSetField(fieldInfo, toLocal, value): a STATIC method, so there is no call target.
+				expressionList.Add(Expression.Call(
+					setMethod,
+					fieldConstant,
+					Expression.Convert(toLocal, typeof(object)),
+					Expression.Convert(call, typeof(object))));
 			}
 		}
 		else
 		{
 			expressionList.Add(Expression.Assign(Expression.Field(toLocal, fieldInfo), call));
 		}
-	}
-
-	private static MethodCallExpression BuildSetFieldCall(MethodInfo setMethod, Expression fieldConstant, Expression toLocal, Expression call)
-	{
-		return Expression.Call(setMethod, fieldConstant, Expression.Convert(toLocal, typeof(object)), Expression.Convert(call, typeof(object)));
 	}
 
 	private static object GenerateProcessArrayMethod(Type type)
