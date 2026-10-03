@@ -50,7 +50,10 @@ public class ArraysSpec() : BaseTest(true)
 		cloned = arr.DeepClone();
 		Assert.Empty(cloned);
 
-		if (1.Equals(1)) arr = null;
+		if (1.Equals(1))
+		{
+			arr = null;
+		}
 		Assert.Null(arr.DeepClone());
 	}
 
@@ -257,15 +260,27 @@ public class ArraysSpec() : BaseTest(true)
 		const int cnt3 = 6;
 		var arr = new int[cnt1, cnt2, cnt3];
 		for (var i1 = 0; i1 < cnt1; i1++)
+		{
 			for (var i2 = 0; i2 < cnt2; i2++)
+			{
 				for (var i3 = 0; i3 < cnt3; i3++)
+				{
 					arr[i1, i2, i3] = i1 * 100 + i2 * 10 + i3;
+				}
+			}
+		}
 		var clone = arr.DeepClone();
 		Assert.False(ReferenceEquals(arr, clone));
 		for (var i1 = 0; i1 < cnt1; i1++)
+		{
 			for (var i2 = 0; i2 < cnt2; i2++)
+			{
 				for (var i3 = 0; i3 < cnt3; i3++)
+				{
 					Assert.Equal(i1 * 100 + i2 * 10 + i3, arr[i1, i2, i3]);
+				}
+			}
+		}
 	}
 
 	[Fact]

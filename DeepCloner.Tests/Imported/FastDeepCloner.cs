@@ -79,11 +79,17 @@ public class FastDeepCloner_Copy
 	private void DataBind(object desireObjectToBeCloned, FieldType_Copy fieldType = FieldType_Copy.FieldInfo, Type ignorePropertiesWithAttribute = null, bool? initPublicOnly = null, IDictionary<string, bool> alreadyCloned = null)
 	{
 		if (desireObjectToBeCloned == null)
+		{
 			return;
+		}
 		if (_cachedFields == null)
+		{
 			_cachedFields = new Dictionary<Type, List<FieldInfo>>();
+		}
 		if (_cachedPropertyInfo == null)
+		{
 			_cachedPropertyInfo = new Dictionary<Type, List<PropertyInfo>>();
+		}
 
 		_alreadyCloned = alreadyCloned ?? new Dictionary<string, bool>();
 		_ignorePropertiesWithAttribute = ignorePropertiesWithAttribute;
@@ -100,9 +106,13 @@ public class FastDeepCloner_Copy
 			_rank = array.Rank;
 		}
 		else if (desireObjectToBeCloned as IList != null)
+		{
 			_isList = true;
+		}
 		else if (typeof(IDictionary).IsAssignableFrom(_primaryType))
+		{
 			_isDictionary = true;
+		}
 	}
 
 	/// <summary>
@@ -112,10 +122,14 @@ public class FastDeepCloner_Copy
 	private object DeepClone()
 	{
 		if (_desireObjectToBeCloned == null)
+		{
 			return null;
+		}
 		// If the item is array of type more than one dimension then use Array.Clone
 		if (_isArray && _rank > 1)
+		{
 			return ((Array)_desireObjectToBeCloned).Clone();
+		}
 
 		object tObject;
 		// Clone IList or Array
@@ -134,9 +148,13 @@ public class FastDeepCloner_Copy
 						: new FastDeepCloner_Copy(item, _fieldType, _ignorePropertiesWithAttribute, _initPublicOnly, _alreadyCloned).DeepClone();
 				}
 				if (!_isArray)
+				{
 					((IList)tObject).Add(clonedIteam);
+				}
 				else
+				{
 					((Array)tObject).SetValue(clonedIteam, i);
+				}
 
 				i++;
 			}
@@ -176,12 +194,17 @@ public class FastDeepCloner_Copy
 						properties.AddRange(_primaryType.BaseType.GetProperties(Binding));
 						properties.AddRange(_primaryType.GetProperties(Binding | BindingFlags.DeclaredOnly));
 					}
-					else properties.AddRange(_primaryType.GetProperties(Binding));
+					else
+					{
+						properties.AddRange(_primaryType.GetProperties(Binding));
+					}
 
 					_cachedPropertyInfo.Add(_primaryType, properties);
 					if (_ignorePropertiesWithAttribute != null)
+					{
 						_cachedPropertyInfo[_primaryType].RemoveAll(
 							x => x.GetCustomAttributes(_ignorePropertiesWithAttribute, false).FirstOrDefault() != null);
+					}
 				}
 			}
 			else if (!_cachedFields.ContainsKey(_primaryType))
@@ -192,12 +215,17 @@ public class FastDeepCloner_Copy
 					properties.AddRange(_primaryType.BaseType.GetFields(Binding));
 					properties.AddRange(_primaryType.GetFields(Binding | BindingFlags.DeclaredOnly));
 				}
-				else properties.AddRange(_primaryType.GetFields(Binding));
+				else
+				{
+					properties.AddRange(_primaryType.GetFields(Binding));
+				}
 
 				_cachedFields.Add(_primaryType, properties);
 				if (_ignorePropertiesWithAttribute != null)
+				{
 					_cachedFields[_primaryType].RemoveAll(
 						x => x.GetCustomAttributes(_ignorePropertiesWithAttribute, false).FirstOrDefault() != null);
+				}
 			}
 
 			if (_fieldType == FieldType_Copy.FieldInfo)
@@ -206,17 +234,27 @@ public class FastDeepCloner_Copy
 				{
 					// Validate if the property is a writable one.
 					if (property.IsInitOnly || property.FieldType == typeof(nint))
+					{
 						continue;
+					}
 					if (_initPublicOnly.HasValue && _initPublicOnly.Value && !property.IsPublic)
+					{
 						continue;
+					}
 					if (_alreadyCloned.ContainsKey(fullPath + property.Name))
+					{
 						continue;
+					}
 					var value = property.GetValue(_desireObjectToBeCloned);
 					if (value == null)
+					{
 						continue;
+					}
 
 					if (!property.FieldType.IsClass || value is string)
+					{
 						property.SetValue(tObject, value);
+					}
 					else
 					{
 						_alreadyCloned.Add(fullPath + property.Name, true);
@@ -232,15 +270,23 @@ public class FastDeepCloner_Copy
 				{
 					// Validate if the property is a writable one.
 					if (!property.CanWrite || !property.CanRead || property.PropertyType == typeof(nint))
+					{
 						continue;
+					}
 					if (_alreadyCloned.ContainsKey(fullPath + property.Name))
+					{
 						continue;
+					}
 					var value = property.GetValue(_desireObjectToBeCloned, null);
 					if (value == null)
+					{
 						continue;
+					}
 
 					if (!property.PropertyType.IsClass || value is string)
+					{
 						property.SetValue(tObject, value, null);
+					}
 					else
 					{
 						_alreadyCloned.Add(fullPath + property.Name, true);

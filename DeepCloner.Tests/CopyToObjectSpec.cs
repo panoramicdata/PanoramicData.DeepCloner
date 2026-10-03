@@ -68,9 +68,13 @@ public class CopyToObjectSpec
 		var cToRef = cTo;
 
 		if (isDeep)
+		{
 			cFrom.DeepCloneTo(cTo);
+		}
 		else
+		{
 			cFrom.ShallowCloneTo(cTo);
+		}
 
 		Assert.True(ReferenceEquals(cTo, cToRef));
 		Assert.Equal(12, cTo.A);
@@ -100,9 +104,13 @@ public class CopyToObjectSpec
 		var cToRef = cTo;
 
 		if (isDeep)
+		{
 			cFrom.DeepCloneTo(cTo);
+		}
 		else
+		{
 			cFrom.ShallowCloneTo(cTo);
+		}
 
 		Assert.True(ReferenceEquals(cTo, cToRef));
 		Assert.Equal(11, cTo.A);
@@ -139,9 +147,13 @@ public class CopyToObjectSpec
 	{
 		var c1 = new C1();
 		if (isDeep)
+		{
 			Assert.Null(c1.DeepCloneTo((C1)null));
+		}
 		else
+		{
 			Assert.Null(c1.ShallowCloneTo((C1)null));
+		}
 	}
 
 	[Theory]
@@ -151,11 +163,15 @@ public class CopyToObjectSpec
 	{
 		C1 c1 = null;
 		if (isDeep)
+		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			Assert.Throws<ArgumentNullException>(() => { _ = c1.DeepCloneTo(new C1()); });
+		}
 		else
+		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			Assert.Throws<ArgumentNullException>(() => { _ = c1.ShallowCloneTo(new C1()); });
+		}
 	}
 
 	[Theory]
@@ -165,11 +181,15 @@ public class CopyToObjectSpec
 	{
 		C1 c1 = new C4();
 		if (isDeep)
+		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			Assert.Throws<InvalidOperationException>(() => { _ = c1.DeepCloneTo(new C2()); });
+		}
 		else
+		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			Assert.Throws<InvalidOperationException>(() => { _ = c1.ShallowCloneTo(new C2()); });
+		}
 	}
 
 	[Theory]
@@ -182,11 +202,15 @@ public class CopyToObjectSpec
 		var objTo = (I1)sTo;
 		objTo.A = 23;
 		if (isDeep)
+		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			Assert.Throws<InvalidOperationException>(() => { _ = ((I1)sFrom).DeepCloneTo(objTo); });
+		}
 		else
+		{
 			// ReSharper disable once ExpressionIsAlwaysNull
 			Assert.Throws<InvalidOperationException>(() => { _ = ((I1)sFrom).ShallowCloneTo(objTo); });
+		}
 	}
 
 	[Fact]
@@ -204,8 +228,14 @@ public class CopyToObjectSpec
 	{
 		var arrFrom = new[] { 1, 2, 3 };
 		var arrTo = new[] { 4, 5, 6 };
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		Assert.Equal(3, arrTo.Length);
 		Assert.Equal(1, arrTo[0]);
 		Assert.Equal(2, arrTo[1]);
@@ -219,8 +249,14 @@ public class CopyToObjectSpec
 	{
 		var arrFrom = new[] { 1, 2, 3 };
 		var arrTo = new[] { 4, 5 };
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		Assert.Equal(2, arrTo.Length);
 		Assert.Equal(1, arrTo[0]);
 		Assert.Equal(2, arrTo[1]);
@@ -233,8 +269,14 @@ public class CopyToObjectSpec
 	{
 		var arrFrom = new[] { 1, 2 };
 		var arrTo = new[] { 4, 5, 6 };
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		Assert.Equal(3, arrTo.Length);
 		Assert.Equal(1, arrTo[0]);
 		Assert.Equal(2, arrTo[1]);
@@ -282,8 +324,14 @@ public class CopyToObjectSpec
 		var arrTo = Array.CreateInstance(typeof(int), [2], [0]);
 		arrFrom.SetValue(1, 1);
 		arrFrom.SetValue(2, 2);
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		Assert.Equal(2, arrTo.Length);
 		Assert.Equal(1, arrTo.GetValue(0));
 		Assert.Equal(2, arrTo.GetValue(1));
@@ -299,8 +347,14 @@ public class CopyToObjectSpec
 		var arrTo = Array.CreateInstance(typeof(int), [1, 1], [0, 0]);
 		arrFrom.SetValue(1, 1, 1);
 		arrFrom.SetValue(2, 2, 2);
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		// The point is that the destination array's own dimensions were not resized,
 		// so assert Length directly rather than Assert.Single (hence xUnit2013).
 #pragma warning disable xUnit2013
@@ -317,14 +371,26 @@ public class CopyToObjectSpec
 		var arrFrom = new[,] { { 1, 2 }, { 3, 4 } };
 		// with offset. its ok
 		var arrTo = new int[3, 1];
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		Assert.Equal(1, arrTo[0, 0]);
 		Assert.Equal(3, arrTo[1, 0]);
 
 		arrTo = new int[2, 2];
-		if (isDeep) arrFrom.DeepCloneTo(arrTo);
-		else arrFrom.ShallowCloneTo(arrTo);
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
 		Assert.Equal(1, arrTo[0, 0]);
 		Assert.Equal(2, arrTo[0, 1]);
 		Assert.Equal(3, arrTo[1, 0]);
@@ -338,15 +404,27 @@ public class CopyToObjectSpec
 		const int cnt3 = 6;
 		var arr = new int[cnt1, cnt2, cnt3];
 		for (var i1 = 0; i1 < cnt1; i1++)
+		{
 			for (var i2 = 0; i2 < cnt2; i2++)
+			{
 				for (var i3 = 0; i3 < cnt3; i3++)
+				{
 					arr[i1, i2, i3] = i1 * 100 + i2 * 10 + i3;
+				}
+			}
+		}
 		var clone = arr.DeepCloneTo(new int[cnt1, cnt2, cnt3]);
 		Assert.False(ReferenceEquals(arr, clone));
 		for (var i1 = 0; i1 < cnt1; i1++)
+		{
 			for (var i2 = 0; i2 < cnt2; i2++)
+			{
 				for (var i3 = 0; i3 < cnt3; i3++)
+				{
 					Assert.Equal(i1 * 100 + i2 * 10 + i3, arr[i1, i2, i3]);
+				}
+			}
+		}
 	}
 
 	[Fact]
@@ -417,7 +495,9 @@ public class CopyToObjectSpec
 		// big dictionary
 		d1.Clear();
 		for (var i = 0; i < 1000; i++)
+		{
 			d1[i.ToString()] = i.ToString();
+		}
 		d1.DeepCloneTo(d2);
 		Assert.Equal(1000, d2.Count);
 		Assert.Equal("557", d2["557"]);
