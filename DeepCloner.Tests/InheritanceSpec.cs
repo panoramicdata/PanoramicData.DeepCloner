@@ -48,7 +48,7 @@ public class InheritanceSpec() : BaseTest(true)
 		public int Z { get; set; }
 	}
 
-	public struct S1 : IDisposable
+	public struct S1 : IDisposable, IEquatable<S1>
 	{
 		public C1 X { get; set; }
 
@@ -57,15 +57,27 @@ public class InheritanceSpec() : BaseTest(true)
 		public void Dispose()
 		{
 		}
+
+		public readonly bool Equals(S1 other) => EqualityComparer<C1>.Default.Equals(X, other.X) && EqualityComparer<int>.Default.Equals(F, other.F);
+
+		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
+
+		public override readonly int GetHashCode() => HashCode.Combine(X, F);
 	}
 
-	public struct S2 : IDisposable
+	public struct S2 : IDisposable, IEquatable<S2>
 	{
 		public IDisposable X { get; set; }
 
 		public void Dispose()
 		{
 		}
+
+		public readonly bool Equals(S2 other) => EqualityComparer<IDisposable>.Default.Equals(X, other.X);
+
+		public override readonly bool Equals(object obj) => obj is S2 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<IDisposable>.Default.GetHashCode(X);
 	}
 
 	public class C3
@@ -115,11 +127,17 @@ public class InheritanceSpec() : BaseTest(true)
 		Assert.Equal(1, cloned.X);
 	}
 
-	public struct S3
+	public struct S3 : IEquatable<S3>
 	{
 		public C1P X { get; set; }
 
 		public C1P Y { get; set; }
+
+		public readonly bool Equals(S3 other) => EqualityComparer<C1P>.Default.Equals(X, other.X) && EqualityComparer<C1P>.Default.Equals(Y, other.Y);
+
+		public override readonly bool Equals(object obj) => obj is S3 other && Equals(other);
+
+		public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 	}
 
 	[Fact]

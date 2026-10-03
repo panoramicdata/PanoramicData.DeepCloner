@@ -41,9 +41,15 @@ public class CopyToObjectSpec
 		int A { get; set; }
 	}
 
-	public struct S1 : I1
+	public struct S1 : I1, IEquatable<S1>
 	{
 		public int A { get; set; }
+
+		public readonly bool Equals(S1 other) => EqualityComparer<int>.Default.Equals(A, other.A);
+
+		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<int>.Default.GetHashCode(A);
 	}
 
 	[Theory]

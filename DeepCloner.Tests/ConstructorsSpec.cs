@@ -37,7 +37,7 @@ public class ConstructorsSpec() : BaseTest(true)
 	{
 		public ExClass()
 		{
-			throw new Exception();
+			throw new InvalidOperationException();
 		}
 
 		public ExClass(string x)
@@ -47,17 +47,17 @@ public class ConstructorsSpec() : BaseTest(true)
 
 		public override bool Equals(object obj)
 		{
-			throw new Exception();
+			throw new InvalidOperationException();
 		}
 
 		public override int GetHashCode()
 		{
-			throw new Exception();
+			throw new InvalidOperationException();
 		}
 
 		public override string ToString()
 		{
-			throw new Exception();
+			throw new InvalidOperationException();
 		}
 	}
 

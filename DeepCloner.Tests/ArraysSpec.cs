@@ -99,14 +99,26 @@ public class ArraysSpec() : BaseTest(true)
 		Assert.NotEqual(arr[1], cloned[1]);
 	}
 
-	public struct S1(int x)
+	public struct S1(int x) : IEquatable<S1>
 	{
 		public int X = x;
+
+		public readonly bool Equals(S1 other) => EqualityComparer<int>.Default.Equals(X, other.X);
+
+		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<int>.Default.GetHashCode(X);
 	}
 
-	public struct S2
+	public struct S2 : IEquatable<S2>
 	{
 		public C1 C;
+
+		public readonly bool Equals(S2 other) => EqualityComparer<C1>.Default.Equals(C, other.C);
+
+		public override readonly bool Equals(object obj) => obj is S2 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<C1>.Default.GetHashCode(C);
 	}
 
 	[Fact]

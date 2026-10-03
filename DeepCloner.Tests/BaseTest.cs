@@ -7,7 +7,7 @@ namespace PanoramicData.DeepCloner.Test;
 
 public class BaseTest
 {
-	public BaseTest(bool isSafeInit)
+	protected BaseTest(bool isSafeInit)
 	{
 		SwitchTo(isSafeInit);
 	}
