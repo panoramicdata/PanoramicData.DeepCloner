@@ -10,7 +10,7 @@ following Panoramic Data's engineering conventions.
 ## About Panoramic Data
 
 Panoramic Data Limited is a software company. This repository is the PanoramicData.DeepCloner
-NuGet package, a library for deep and shallow cloning of .NET objects. Its build, CI, versioning,
+NuGet package, a library for deep and shallow cloning of dotnet objects. Its build, CI, versioning,
 licensing and community files are governed by the open source PanoramicData.NugetManagement tool
 (https://github.com/panoramicdata/PanoramicData.NugetManagement).
 
@@ -24,7 +24,11 @@ licensing and community files are governed by the open source PanoramicData.Nuge
 
 ## Tools
 
-- Build and test with `dotnet build` / `dotnet test`.
+- Build and test with `dotnet build` / `dotnet test`, for example:
+
+  ```
+  dotnet test DeepCloner.Tests
+  ```
 - Use `git` for version control, following `CONTRIBUTING.md`.
 
 ## Shared instructions

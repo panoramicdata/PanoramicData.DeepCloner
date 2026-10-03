@@ -49,7 +49,9 @@ public static class DeepClonerExtensions
 	{
 		if (!PermissionCheck())
 		{
+#pragma warning disable S3877 // Deliberate fail-fast: the library cannot work without reflection permission
 			throw new SecurityException("DeepCloner should have enough permissions to run. Grant FullTrust or Reflection permission.");
+#pragma warning restore S3877
 		}
 	}
 
