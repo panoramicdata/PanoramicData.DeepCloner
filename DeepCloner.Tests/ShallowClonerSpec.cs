@@ -49,13 +49,19 @@ public class ShallowClonerSpec() : BaseTest(true)
 		Assert.Equal(c1.X, clone.X);
 	}
 
-	private struct S1 : IDisposable
+	private struct S1 : IDisposable, IEquatable<S1>
 	{
 		public int X;
 
 		public void Dispose()
 		{
 		}
+
+		public readonly bool Equals(S1 other) => EqualityComparer<int>.Default.Equals(X, other.X);
+
+		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<int>.Default.GetHashCode(X);
 	}
 
 	[Fact]

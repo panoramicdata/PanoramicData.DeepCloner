@@ -43,8 +43,7 @@ public abstract class ShallowObjectCloner
 	internal static void SwitchTo(bool isSafe)
 	{
 		DeepClonerCache.ClearCache();
-		if (isSafe) _instance = new ShallowSafeObjectCloner();
-		else _instance = _unsafeInstance;
+		_instance = isSafe ? new ShallowSafeObjectCloner() : _unsafeInstance;
 	}
 
  private sealed class ShallowSafeObjectCloner : ShallowObjectCloner

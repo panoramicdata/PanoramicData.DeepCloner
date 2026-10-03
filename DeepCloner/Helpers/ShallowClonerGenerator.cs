@@ -12,7 +12,9 @@ internal static class ShallowClonerGenerator
 		if (obj is ValueType)
 		{
 			if (typeof(T) == obj.GetType())
+			{
 				return obj;
+			}
 
 			// we're here so, we clone value type obj as object type T
 			// so, we need to copy it, bcs we have a reference, not real object.

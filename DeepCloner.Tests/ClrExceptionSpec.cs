@@ -48,7 +48,7 @@ public class ClrExpectionSpec
 					 * case 1: if commented out - no crash
 					 * case 2: if left as is then works only with BaseClassForTest2.Validate #region #1
 					 */
-					RuleFor(x => 1 == 1);
+					RuleFor(x => true);
 				}
 			}
 
@@ -67,10 +67,9 @@ public class ClrExpectionSpec
 
 		public void Validate()
 		{
-			#region #1 This works
+			#region #1 This works (no validator access)
 
-			//var validator = GetValidator();
-			//Console.WriteLine( validator );
+			// Intentionally empty: the crash only occurs when GetValidator is called (#2).
 
 			#endregion
 
@@ -85,9 +84,6 @@ public class ClrExpectionSpec
 	[Fact]
 	public void TestMethod2()
 	{
-		// typeof(ShallowObjectCloner).GetMethod("SwitchTo", BindingFlags.NonPublic | BindingFlags.Static)
-		//                          .Invoke(null, new object[] { true });
-
 		// Repeated to shake out the intermittent CLR crash this regression guards against.
 		// Was NUnit's [Repeat(1000)]; xUnit has no equivalent, and NUnit reported the
 		// repeated runs as a single test, so a loop keeps the test count unchanged.

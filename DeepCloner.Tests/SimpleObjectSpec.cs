@@ -33,19 +33,37 @@ public class SimpleObjectSpec() : BaseTest(true)
 		Assert.Equal(AttributeTargets.Delegate, cloned.Enum);
 	}
 
-	public struct S1
+	public struct S1 : IEquatable<S1>
 	{
 		public int A;
+
+		public readonly bool Equals(S1 other) => EqualityComparer<int>.Default.Equals(A, other.A);
+
+		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<int>.Default.GetHashCode(A);
 	}
 
-	public struct S2
+	public struct S2 : IEquatable<S2>
 	{
 		public S3 S;
+
+		public readonly bool Equals(S2 other) => EqualityComparer<S3>.Default.Equals(S, other.S);
+
+		public override readonly bool Equals(object obj) => obj is S2 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<S3>.Default.GetHashCode(S);
 	}
 
-	public struct S3
+	public struct S3 : IEquatable<S3>
 	{
 		public bool B;
+
+		public readonly bool Equals(S3 other) => EqualityComparer<bool>.Default.Equals(B, other.B);
+
+		public override readonly bool Equals(object obj) => obj is S3 other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<bool>.Default.GetHashCode(B);
 	}
 
 	// We have an special logic for simple structs, so, this test checks that this logic works correctly
@@ -108,11 +126,17 @@ public class SimpleObjectSpec() : BaseTest(true)
 		Assert.NotEqual(c1.C, cloned.C);
 	}
 
-	public struct S4
+	public struct S4 : IEquatable<S4>
 	{
 		public C2 C;
 
 		public int F;
+
+		public readonly bool Equals(S4 other) => EqualityComparer<C2>.Default.Equals(C, other.C) && EqualityComparer<int>.Default.Equals(F, other.F);
+
+		public override readonly bool Equals(object obj) => obj is S4 other && Equals(other);
+
+		public override readonly int GetHashCode() => HashCode.Combine(C, F);
 	}
 
 	[Fact]
@@ -210,9 +234,15 @@ public class SimpleObjectSpec() : BaseTest(true)
 		}
 	}
 
-	public struct StructWithObject
+	public struct StructWithObject : IEquatable<StructWithObject>
 	{
 		public readonly object Z;
+
+		public readonly bool Equals(StructWithObject other) => EqualityComparer<object>.Default.Equals(Z, other.Z);
+
+		public override readonly bool Equals(object obj) => obj is StructWithObject other && Equals(other);
+
+		public override readonly int GetHashCode() => EqualityComparer<object>.Default.GetHashCode(Z);
 	}
 
 	[Fact]
