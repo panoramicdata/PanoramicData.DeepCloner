@@ -17,12 +17,9 @@ public class ReadonlyStructSpec() : BaseTest(true)
 		public int Value { get; set; }
 	}
 
-	public readonly struct BoxHolder(Box box)
-	{
-		public Box Box { get; } = box;
-	}
+	public readonly record struct BoxHolder(Box Box);
 
-	public struct MutableHolder
+	public record struct MutableHolder
 	{
 		public int[] Items { get; set; }
 	}
