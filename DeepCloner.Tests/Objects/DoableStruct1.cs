@@ -1,4 +1,5 @@
-﻿namespace PanoramicData.DeepCloner.Test.Objects;
+﻿#pragma warning disable S1104 // Public fields are deliberate: these fixtures exist to test field cloning
+namespace PanoramicData.DeepCloner.Test.Objects;
 
 public struct DoableStruct1 : IDoable, IEquatable<DoableStruct1>
 {

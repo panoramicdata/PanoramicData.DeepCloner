@@ -16,8 +16,9 @@ licensing and community files are governed by the open source PanoramicData.Nuge
 
 ## Scope and boundaries
 
-- Do not weaken `TreatWarningsAsErrors`, delete or skip tests to make a build pass, or bypass
-  CI/CD checks.
+- Do not weaken `TreatWarningsAsErrors`.
+- Do not delete or skip tests to make a build pass.
+- Do not bypass CI/CD checks.
 - Do not commit secrets, credentials, or API tokens.
 - Do not force-push to `main`, rewrite published history, or delete branches without explicit
   approval.

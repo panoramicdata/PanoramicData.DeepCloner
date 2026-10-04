@@ -1,4 +1,5 @@
-﻿#nullable disable
+﻿#pragma warning disable S1104, S2357 // Public fields are deliberate: these fixtures exist to test field cloning
+#nullable disable
 
 using Xunit;
 using PanoramicData.DeepCloner;
