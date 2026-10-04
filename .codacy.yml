@@ -1,0 +1,5 @@
+---
+exclude_paths:
+  # Vendored third-party comparison code (the FastDeepCloner library), kept verbatim so the tests
+  # can compare behaviour against it. It is not ours to refactor.
+  - "DeepCloner.Tests/Imported/**"

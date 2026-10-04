@@ -369,6 +369,35 @@ public class CopyToObjectSpec
 		Assert.Equal(1, arrTo.GetValue(0, 0));
 	}
 
+	public readonly record struct StructWithReference(int[] Items);
+
+	[Theory]
+	[InlineData(false)]
+	[InlineData(true)]
+	public void TwoDim_Array_Of_Structs_With_References_Should_Be_Cloned(bool isDeep)
+	{
+		var arrFrom = new[,]
+		{
+			{ new StructWithReference([1]), new StructWithReference([2]) },
+			{ new StructWithReference([3]), new StructWithReference([4]) }
+		};
+		var arrTo = new StructWithReference[2, 2];
+
+		if (isDeep)
+		{
+			arrFrom.DeepCloneTo(arrTo);
+		}
+		else
+		{
+			arrFrom.ShallowCloneTo(arrTo);
+		}
+
+		Assert.Equal([4], arrTo[1, 1].Items);
+		Assert.Equal([1], arrTo[0, 0].Items);
+		Assert.Equal([3], arrTo[1, 0].Items);
+		Assert.Equal(isDeep, !ReferenceEquals(arrFrom[1, 1].Items, arrTo[1, 1].Items));
+	}
+
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]

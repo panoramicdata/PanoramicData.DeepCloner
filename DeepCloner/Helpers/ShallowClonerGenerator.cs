@@ -22,10 +22,14 @@ internal static class ShallowClonerGenerator
 		}
 
 		if (ReferenceEquals(obj, null))
+		{
 			return (T)(object)null;
+		}
 
 		if (DeepClonerSafeTypes.CanReturnSameObject(obj.GetType()))
+		{
 			return obj;
+		}
 
 		return (T)ShallowObjectCloner.CloneObject(obj);
 	}

@@ -1,4 +1,5 @@
-﻿#nullable disable
+﻿#pragma warning disable S3877 // Equals throws deliberately: the test checks that cloning never calls it
+#nullable disable
 
 using Xunit;
 using PanoramicData.DeepCloner;
