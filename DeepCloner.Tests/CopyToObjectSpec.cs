@@ -395,6 +395,7 @@ public class CopyToObjectSpec
 		Assert.Equal([4], arrTo[1, 1].Items);
 		Assert.Equal([1], arrTo[0, 0].Items);
 		Assert.Equal([3], arrTo[1, 0].Items);
+		Assert.Equal(isDeep, !ReferenceEquals(arrFrom[1, 1].Items, arrTo[1, 1].Items));
 	}
 
 	[Theory]

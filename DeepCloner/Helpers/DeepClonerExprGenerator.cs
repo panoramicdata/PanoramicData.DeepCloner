@@ -225,27 +225,47 @@ internal static class DeepClonerExprGenerator
 			{
 				// fieldInfo.SetValue(toLocal, value): FieldInfo.SetValue is an INSTANCE method, so the
 				// FieldInfo constant is the call target, not the first argument.
-				expressionList.Add(Expression.Call(
+				expressionList.Add(SetReadonlyField(toLocal, boxed => Expression.Call(
 					fieldConstant,
 					_fieldSetMethod!,
-					Expression.Convert(toLocal, typeof(object)),
-					Expression.Convert(call, typeof(object))));
+					boxed,
+					Expression.Convert(call, typeof(object)))));
 			}
 			else
 			{
                 var setMethod = typeof(DeepClonerExprGenerator).GetPrivateStaticMethod("ForceSetField")!;
 				// ForceSetField(fieldInfo, toLocal, value): a STATIC method, so there is no call target.
-				expressionList.Add(Expression.Call(
+				expressionList.Add(SetReadonlyField(toLocal, boxed => Expression.Call(
 					setMethod,
 					fieldConstant,
-					Expression.Convert(toLocal, typeof(object)),
-					Expression.Convert(call, typeof(object))));
+					boxed,
+					Expression.Convert(call, typeof(object)))));
 			}
 		}
 		else
 		{
 			expressionList.Add(Expression.Assign(Expression.Field(toLocal, fieldInfo), call));
 		}
+	}
+
+	/// <summary>
+	/// Builds the expression that writes a readonly field through reflection, which needs the target as an object.
+	/// Boxing a class just passes the reference, but boxing a struct copies it, so the write would land on the copy
+	/// and be thrown away. For a struct the target is therefore boxed once, written, and unboxed back.
+	/// </summary>
+	private static Expression SetReadonlyField(Expression toLocal, Func<Expression, Expression> setField)
+	{
+		if (!toLocal.Type.IsValueType())
+		{
+			return setField(Expression.Convert(toLocal, typeof(object)));
+		}
+
+		var boxed = Expression.Variable(typeof(object));
+		return Expression.Block(
+			[boxed],
+			Expression.Assign(boxed, Expression.Convert(toLocal, typeof(object))),
+			setField(boxed),
+			Expression.Assign(toLocal, Expression.Unbox(boxed, toLocal.Type)));
 	}
 
 	private static object GenerateProcessArrayMethod(Type type)
