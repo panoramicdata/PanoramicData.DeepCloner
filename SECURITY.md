@@ -12,7 +12,7 @@ If you discover a security vulnerability, please report it responsibly.
 
 Instead, use GitHub's private vulnerability reporting: open this repository's **Security** tab
 and choose **Report a vulnerability**, or go straight to
-https://github.com/panoramicdata/PanoramicData.DeepCloner/security/advisories/new
+https://github.com/panoramicData/PanoramicData.DeepCloner/security/advisories/new
 
 Please include:
 
