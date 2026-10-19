@@ -10,6 +10,10 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>PanoramicData.DeepCloner</Title>
     <Description>A deep cloner for C# objects.</Description>
+    <!-- A fork of force-net/DeepCloner (MIT, © 2016 force). The MIT licence requires force's
+         copyright notice to be kept, so it is credited here and LICENSE is packed below. -->
+    <Authors>force, Panoramic Data Limited</Authors>
+    <Copyright>Copyright © 2016 force; Copyright © 2025-$([System.DateTime]::Now.Year) Panoramic Data Limited</Copyright>
     <PackageProjectUrl>https://github.com/panoramicdata/PanoramicData.DeepCloner.git</PackageProjectUrl>
     <PackageIcon>Panoramic Data.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -42,6 +46,10 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
