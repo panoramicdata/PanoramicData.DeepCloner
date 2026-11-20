@@ -22,6 +22,7 @@ licensing and community files are governed by the open source PanoramicData.Nuge
 - Do not commit secrets, credentials, or API tokens.
 - Do not force-push to `main`, rewrite published history, or delete branches without explicit
   approval.
+- Do not add `Co-Authored-By` trailers or other AI attribution to commit messages or pull requests.
 
 ## Tools
 
