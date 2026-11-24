@@ -1,3 +1,5 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/4cf772922b284079a26b11eadf4401ce)](https://app.codacy.com/gh/panoramicdata/PanoramicData.DeepCloner/dashboard)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [![NuGet version](https://img.shields.io/nuget/v/PanoramicData.DeepCloner.svg)](https://www.nuget.org/packages/PanoramicData.DeepCloner/)
@@ -5,6 +7,10 @@
 # PanoramicData.DeepCloner
 
 [![Codacy Badge](https://app.codacy.com/gh/panoramicdata/PanoramicData.DeepCloner/badge/grade)](https://app.codacy.com/gh/panoramicdata/PanoramicData.DeepCloner/dashboard?utm_source=gh&utm_medium=referral&utm_content=panoramicdata/PanoramicData.DeepCloner&utm_campaign=Badge_grade)
+
+> **Need help with APIs or .NET?** Panoramic Data are experts in APIs and .NET, and we can help with your development. [Contact us](https://www.panoramicdata.com/contact-us) or see our [software services](https://www.panoramicdata.com/services/software).
+
+Supports .NET 11.0.
 
 Library with extension to clone objects for .NET. It can deep or shallow copy objects.
 In deep cloning, the full object graph is maintained.
