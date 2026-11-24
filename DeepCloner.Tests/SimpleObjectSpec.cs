@@ -12,59 +12,23 @@ public class SimpleObjectSpec() : BaseTest(true)
 	[Fact]
 	public void SimpleObject_Should_Be_Cloned()
 	{
-		var obj = new TestObject1 { Int = 42, Byte = 42, Short = 42, Long = 42, DateTime = new DateTime(2001, 01, 01), Char = 'X', Decimal = 1.2m, Double = 1.3, Float = 1.4f, String = "test1", UInt = 42, ULong = 42, UShort = 42, Bool = true, IntPtr = new nint(42), UIntPtr = new nuint(42), Enum = AttributeTargets.Delegate };
-
-		var cloned = obj.DeepClone();
-		Assert.Equal(42, cloned.Byte);
-		Assert.Equal(42, cloned.Short);
-		Assert.Equal(42, cloned.UShort);
-		Assert.Equal(42, cloned.Int);
-		Assert.Equal(42u, cloned.UInt);
-		Assert.Equal(42, cloned.Long);
-		Assert.Equal(42ul, cloned.ULong);
-		Assert.Equal(1.2m, cloned.Decimal);
-		Assert.Equal(1.3, cloned.Double);
-		Assert.Equal(1.4f, cloned.Float);
-		Assert.Equal('X', cloned.Char);
-		Assert.Equal("test1", cloned.String);
-		Assert.Equal(new DateTime(2001, 1, 1), cloned.DateTime);
-		Assert.True(cloned.Bool);
-		Assert.Equal(new nint(42), cloned.IntPtr);
-		Assert.Equal(new nuint(42), cloned.UIntPtr);
-		Assert.Equal(AttributeTargets.Delegate, cloned.Enum);
+		var cloned = TestObject1Sample.Create().DeepClone();
+		TestObject1Sample.AssertMatches(cloned);
 	}
 
-	public struct S1 : IEquatable<S1>
+	public record struct S1
 	{
 		public int A;
-
-		public readonly bool Equals(S1 other) => EqualityComparer<int>.Default.Equals(A, other.A);
-
-		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
-
-		public override readonly int GetHashCode() => EqualityComparer<int>.Default.GetHashCode(A);
 	}
 
-	public struct S2 : IEquatable<S2>
+	public record struct S2
 	{
 		public S3 S;
-
-		public readonly bool Equals(S2 other) => EqualityComparer<S3>.Default.Equals(S, other.S);
-
-		public override readonly bool Equals(object obj) => obj is S2 other && Equals(other);
-
-		public override readonly int GetHashCode() => EqualityComparer<S3>.Default.GetHashCode(S);
 	}
 
-	public struct S3 : IEquatable<S3>
+	public record struct S3
 	{
 		public bool B;
-
-		public readonly bool Equals(S3 other) => EqualityComparer<bool>.Default.Equals(B, other.B);
-
-		public override readonly bool Equals(object obj) => obj is S3 other && Equals(other);
-
-		public override readonly int GetHashCode() => EqualityComparer<bool>.Default.GetHashCode(B);
 	}
 
 	// We have an special logic for simple structs, so, this test checks that this logic works correctly
@@ -127,17 +91,11 @@ public class SimpleObjectSpec() : BaseTest(true)
 		Assert.NotEqual(c1.C, cloned.C);
 	}
 
-	public struct S4 : IEquatable<S4>
+	public record struct S4
 	{
 		public C2 C;
 
 		public int F;
-
-		public readonly bool Equals(S4 other) => EqualityComparer<C2>.Default.Equals(C, other.C) && EqualityComparer<int>.Default.Equals(F, other.F);
-
-		public override readonly bool Equals(object obj) => obj is S4 other && Equals(other);
-
-		public override readonly int GetHashCode() => HashCode.Combine(C, F);
 	}
 
 	[Fact]
@@ -235,15 +193,9 @@ public class SimpleObjectSpec() : BaseTest(true)
 		}
 	}
 
-	public struct StructWithObject : IEquatable<StructWithObject>
+	public record struct StructWithObject
 	{
 		public readonly object Z;
-
-		public readonly bool Equals(StructWithObject other) => EqualityComparer<object>.Default.Equals(Z, other.Z);
-
-		public override readonly bool Equals(object obj) => obj is StructWithObject other && Equals(other);
-
-		public override readonly int GetHashCode() => EqualityComparer<object>.Default.GetHashCode(Z);
 	}
 
 	[Fact]
