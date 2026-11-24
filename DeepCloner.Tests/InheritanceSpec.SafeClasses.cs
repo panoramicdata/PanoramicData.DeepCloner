@@ -36,50 +36,31 @@ public partial class InheritanceSpec
 		public Safe1 Safe;
 	}
 
+	private static void AssertSafeFieldIsCloned(Safe1 safe, Func<Safe1, Safe1> cloneThroughHolder, Type expectedType)
+	{
+		var cloned = cloneThroughHolder(safe);
+		Assert.False(safe == cloned);
+		Assert.Equal(expectedType, cloned.GetType());
+	}
+
+	private static Safe1 ThroughV1(Safe1 safe) => new V1 { Safe = safe }.DeepClone().Safe;
+
+	private static Safe1 ThroughV2(Safe1 safe) => new V2("X") { Safe = safe }.DeepClone().Safe;
+
 	// these tests are overlapped by others, but for future can be helpful
 	[Fact]
 	public void Class_With_Safe_Class_Should_Be_Cloned()
-	{
-		var v = new V1
-		{
-			Safe = new Safe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-	}
+		=> AssertSafeFieldIsCloned(new Safe1(), ThroughV1, typeof(Safe1));
 
 	[Fact]
 	public void Class_With_Safe_Class_Should_Be_Cloned_No_Default_Constructor()
-	{
-		var v = new V2("X")
-		{
-			Safe = new Safe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-	}
+		=> AssertSafeFieldIsCloned(new Safe1(), ThroughV2, typeof(Safe1));
 
 	[Fact]
 	public void Class_With_UnSafe_Class_Should_Be_Cloned()
-	{
-		var v = new V1
-		{
-			Safe = new Unsafe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-		Assert.Equal(typeof(Unsafe1), v2.Safe.GetType());
-	}
+		=> AssertSafeFieldIsCloned(new Unsafe1(), ThroughV1, typeof(Unsafe1));
 
 	[Fact]
 	public void Class_With_UnSafe_Class_Should_Be_Cloned_No_Default_Constructor()
-	{
-		var v = new V2("X")
-		{
-			Safe = new Unsafe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-		Assert.Equal(typeof(Unsafe1), v2.Safe.GetType());
-	}
+		=> AssertSafeFieldIsCloned(new Unsafe1(), ThroughV2, typeof(Unsafe1));
 }

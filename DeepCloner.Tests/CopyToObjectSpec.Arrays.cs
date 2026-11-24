@@ -7,68 +7,37 @@ namespace PanoramicData.DeepCloner.Test;
 
 public partial class CopyToObjectSpec
 {
+	private static int[] CopyInts(int[] from, int[] to, bool isDeep)
+	{
+		if (isDeep)
+		{
+			from.DeepCloneTo(to);
+		}
+		else
+		{
+			from.ShallowCloneTo(to);
+		}
+
+		return to;
+	}
+
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
 	public void Array_Should_Be_Cloned_Correct_Size(bool isDeep)
-	{
-		var arrFrom = new[] { 1, 2, 3 };
-		var arrTo = new[] { 4, 5, 6 };
-		if (isDeep)
-		{
-			arrFrom.DeepCloneTo(arrTo);
-		}
-		else
-		{
-			arrFrom.ShallowCloneTo(arrTo);
-		}
-		Assert.Equal(3, arrTo.Length);
-		Assert.Equal(1, arrTo[0]);
-		Assert.Equal(2, arrTo[1]);
-		Assert.Equal(3, arrTo[2]);
-	}
+		=> Assert.Equal([1, 2, 3], CopyInts([1, 2, 3], [4, 5, 6], isDeep));
 
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
 	public void Array_Should_Be_Cloned_From_Is_Bigger(bool isDeep)
-	{
-		var arrFrom = new[] { 1, 2, 3 };
-		var arrTo = new[] { 4, 5 };
-		if (isDeep)
-		{
-			arrFrom.DeepCloneTo(arrTo);
-		}
-		else
-		{
-			arrFrom.ShallowCloneTo(arrTo);
-		}
-		Assert.Equal(2, arrTo.Length);
-		Assert.Equal(1, arrTo[0]);
-		Assert.Equal(2, arrTo[1]);
-	}
+		=> Assert.Equal([1, 2], CopyInts([1, 2, 3], [4, 5], isDeep));
 
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
 	public void Array_Should_Be_Cloned_From_Is_Smaller(bool isDeep)
-	{
-		var arrFrom = new[] { 1, 2 };
-		var arrTo = new[] { 4, 5, 6 };
-		if (isDeep)
-		{
-			arrFrom.DeepCloneTo(arrTo);
-		}
-		else
-		{
-			arrFrom.ShallowCloneTo(arrTo);
-		}
-		Assert.Equal(3, arrTo.Length);
-		Assert.Equal(1, arrTo[0]);
-		Assert.Equal(2, arrTo[1]);
-		Assert.Equal(6, arrTo[2]);
-	}
-
+		=> Assert.Equal([1, 2, 6], CopyInts([1, 2], [4, 5, 6], isDeep));
 	[Fact]
 	public void Shallow_Array_Should_Be_Cloned()
 	{
