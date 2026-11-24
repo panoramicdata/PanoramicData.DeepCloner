@@ -326,10 +326,10 @@ internal static class DeepClonerExprGenerator
               .Where(x => x.CanRead && x.Name.StartsWith("Item", StringComparison.Ordinal) && char.IsDigit(x.Name[4]))
 				.Select(x => Expression.Property(local, x.Name))));
 
-		return Expression.Lambda(funcType, Expression.Block(new[] { local },
-          assign, constructor, Expression.Call(state, _addKnownRefMethod, from, local),
-				from),
-			from, state).Compile();
+		var register = Expression.Call(state, _addKnownRefMethod, from, local);
+		Expression[] body = [assign, constructor, register, from];
+
+		return Expression.Lambda(funcType, Expression.Block([local], body), from, state).Compile();
 	}
 
 }
