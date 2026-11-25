@@ -12,16 +12,14 @@ internal static class DeepClonerExprGenerator
 	private static readonly ConcurrentDictionary<FieldInfo, bool> _readonlyFields = new ConcurrentDictionary<FieldInfo, bool>();
 	private static readonly MethodInfo _addKnownRefMethod = typeof(DeepCloneState).GetMethod(nameof(DeepCloneState.AddKnownRef))!;
 
-	#pragma warning disable CS0649
-	private static readonly bool _canFastCopyReadonlyFields;
-	#pragma warning restore CS0649
+	private static bool _canFastCopyReadonlyFields;
 
- private static readonly MethodInfo? _fieldSetMethod;
+	private static readonly MethodInfo? _fieldSetMethod;
 	static DeepClonerExprGenerator()
 	{
 		try
 		{
-         typeof(DeepClonerExprGenerator).GetPrivateStaticField(nameof(_canFastCopyReadonlyFields))!.SetValue(null, true);
+			_canFastCopyReadonlyFields = true;
 #if NETCORE13
 			_fieldSetMethod = typeof(FieldInfo).GetRuntimeMethod("SetValue", new[] { typeof(object), typeof(object) });
 #else
@@ -328,10 +326,10 @@ internal static class DeepClonerExprGenerator
               .Where(x => x.CanRead && x.Name.StartsWith("Item", StringComparison.Ordinal) && char.IsDigit(x.Name[4]))
 				.Select(x => Expression.Property(local, x.Name))));
 
-		return Expression.Lambda(funcType, Expression.Block(new[] { local },
-          assign, constructor, Expression.Call(state, _addKnownRefMethod, from, local),
-				from),
-			from, state).Compile();
+		var register = Expression.Call(state, _addKnownRefMethod, from, local);
+		Expression[] body = [assign, constructor, register, from];
+
+		return Expression.Lambda(funcType, Expression.Block([local], body), from, state).Compile();
 	}
 
 }

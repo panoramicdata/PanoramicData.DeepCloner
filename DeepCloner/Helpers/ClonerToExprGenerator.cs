@@ -260,6 +260,12 @@ internal static class ClonerToExprGenerator
 			return objTo;
 		}
 
+		CopyOrClone2DimArray(objFrom, objTo, l1, l2, state, isDeep);
+		return objTo;
+	}
+
+	private static void CopyOrClone2DimArray<T>(T[,] objFrom, T[,] objTo, int l1, int l2, DeepCloneState state, bool isDeep)
+	{
 		if (!isDeep)
 		{
 			Copy2DimArray(objFrom, objTo, l1, l2);
@@ -272,8 +278,6 @@ internal static class ClonerToExprGenerator
 		{
 			Clone2DimArrayClasses(objFrom, objTo, l1, l2, state);
 		}
-
-		return objTo;
 	}
 
 	private static bool HasNonZeroLowerBound(Array array)
