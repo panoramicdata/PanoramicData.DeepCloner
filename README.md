@@ -35,7 +35,7 @@ This library is a fork of [FastDeepCloner](https://github.com/force-net/DeepClon
 
 ## Supported Frameworks
 
-DeepCloner is a .NET Standard 2.0 library.
+Supports .NET 11.0.
 
 ## Limitation
 
