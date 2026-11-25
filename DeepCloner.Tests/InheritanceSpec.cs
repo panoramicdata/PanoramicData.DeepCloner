@@ -7,7 +7,7 @@ using System;
 
 namespace PanoramicData.DeepCloner.Test;
 
-public class InheritanceSpec() : BaseTest(true)
+public partial class InheritanceSpec() : BaseTest(true)
 {
 	public class C1 : IDisposable
 	{
@@ -49,7 +49,7 @@ public class InheritanceSpec() : BaseTest(true)
 		public int Z { get; set; }
 	}
 
-	public struct S1 : IDisposable, IEquatable<S1>
+	public record struct S1 : IDisposable
 	{
 		public C1 X { get; set; }
 
@@ -58,27 +58,15 @@ public class InheritanceSpec() : BaseTest(true)
 		public void Dispose()
 		{
 		}
-
-		public readonly bool Equals(S1 other) => EqualityComparer<C1>.Default.Equals(X, other.X) && EqualityComparer<int>.Default.Equals(F, other.F);
-
-		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
-
-		public override readonly int GetHashCode() => HashCode.Combine(X, F);
 	}
 
-	public struct S2 : IDisposable, IEquatable<S2>
+	public record struct S2 : IDisposable
 	{
 		public IDisposable X { get; set; }
 
 		public void Dispose()
 		{
 		}
-
-		public readonly bool Equals(S2 other) => EqualityComparer<IDisposable>.Default.Equals(X, other.X);
-
-		public override readonly bool Equals(object obj) => obj is S2 other && Equals(other);
-
-		public override readonly int GetHashCode() => EqualityComparer<IDisposable>.Default.GetHashCode(X);
 	}
 
 	public class C3
@@ -128,17 +116,11 @@ public class InheritanceSpec() : BaseTest(true)
 		Assert.Equal(1, cloned.X);
 	}
 
-	public struct S3 : IEquatable<S3>
+	public record struct S3
 	{
 		public C1P X { get; set; }
 
 		public C1P Y { get; set; }
-
-		public readonly bool Equals(S3 other) => EqualityComparer<C1P>.Default.Equals(X, other.X) && EqualityComparer<C1P>.Default.Equals(Y, other.Y);
-
-		public override readonly bool Equals(object obj) => obj is S3 other && Equals(other);
-
-		public override readonly int GetHashCode() => HashCode.Combine(X, Y);
 	}
 
 	[Fact]
@@ -170,160 +152,5 @@ public class InheritanceSpec() : BaseTest(true)
 		Assert.Equal(4, cloned.Y.Y);
 		Assert.Equal(5, ((C2P)cloned.Y).X);
 		Assert.Equal(6, ((C2P)cloned.Y).Z);
-	}
-
-	[Fact]
-	public void Descendant_In_Array_Should_Be_Cloned()
-	{
-		var c1 = new C1();
-		var c2 = new C2();
-		var arr = new[] { c1, c2 };
-
-		var cloned = arr.DeepClone();
-		Assert.IsType<C1>(cloned[0]);
-		Assert.IsType<C2>(cloned[1]);
-	}
-
-	[Fact]
-	public void Struct_Casted_To_Interface_Should_Be_Cloned()
-	{
-		var s1 = new S1
-		{
-			F = 1
-		};
-		var disp = s1 as IDisposable;
-		var cloned = disp.DeepClone();
-		s1.F = 2;
-		Assert.IsType<S1>(cloned);
-		Assert.Equal(1, ((S1)cloned).F);
-	}
-
-	public IDisposable CCC(IDisposable xx)
-	{
-		var x = (S1)xx;
-		return x;
-	}
-
-	[Fact]
-	public void Class_Casted_To_Object_Should_Be_Cloned()
-	{
-		var c3 = new C3
-		{
-			X = new C1()
-		};
-		var obj = c3 as object;
-		var cloned = obj.DeepClone();
-		Assert.IsType<C3>(cloned);
-		Assert.NotEqual(cloned, c3);
-		Assert.NotNull(((C3)cloned).X);
-		Assert.NotEqual(c3.X, ((C3)cloned).X);
-	}
-
-	[Fact]
-	public void Class_Casted_To_Interface_Should_Be_Cloned()
-	{
-		var c1 = new C1();
-		var disp = c1 as IDisposable;
-		var cloned = disp.DeepClone();
-		Assert.NotEqual(cloned, c1);
-		Assert.IsType<C1>(cloned);
-	}
-
-	[Fact]
-	public void Struct_Casted_To_Interface_With_Class_As_Interface_Should_Be_Cloned()
-	{
-		var s2 = new S2
-		{
-			X = new C1()
-		};
-		var disp = s2 as IDisposable;
-		var cloned = disp.DeepClone();
-		Assert.IsType<S2>(cloned);
-		Assert.IsType<C1>(((S2)cloned).X);
-		Assert.NotEqual(s2.X, ((S2)cloned).X);
-	}
-
-	[Fact]
-	public void Array_Of_Struct_Casted_To_Interface_Should_Be_Cloned()
-	{
-		var s1 = new S1();
-		var arr = new IDisposable[] { s1, s1 };
-		var clonedArr = arr.DeepClone();
-		Assert.Equal(clonedArr[1], clonedArr[0]);
-	}
-
-	public class Safe1
-	{
-	}
-
-	public class Safe2
-	{
-	}
-
-	public class Unsafe1 : Safe1
-	{
-		public object X;
-	}
-
-	public class V1
-	{
-		public Safe1 Safe;
-	}
-
-    public class V2
-	{
-      public V2(string x)
-		{
-			_ = x;
-		}
-
-		public Safe1 Safe;
-	}
-
-	// these tests are overlapped by others, but for future can be helpful
-	[Fact]
-	public void Class_With_Safe_Class_Should_Be_Cloned()
-	{
-		var v = new V1
-		{
-			Safe = new Safe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-	}
-
-	[Fact]
-	public void Class_With_Safe_Class_Should_Be_Cloned_No_Default_Constructor()
-	{
-		var v = new V2("X")
-		{
-			Safe = new Safe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-	}
-
-	[Fact]
-	public void Class_With_UnSafe_Class_Should_Be_Cloned()
-	{
-		var v = new V1
-		{
-			Safe = new Unsafe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-		Assert.Equal(typeof(Unsafe1), v2.Safe.GetType());
-	}
-
-	[Fact]
-	public void Class_With_UnSafe_Class_Should_Be_Cloned_No_Default_Constructor()
-	{
-		var v = new V2("X")
-		{
-			Safe = new Unsafe1()
-		};
-		var v2 = v.DeepClone();
-		Assert.False(v.Safe == v2.Safe);
-		Assert.Equal(typeof(Unsafe1), v2.Safe.GetType());
 	}
 }

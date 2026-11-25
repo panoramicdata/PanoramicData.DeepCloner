@@ -11,26 +11,8 @@ public class ShallowClonerSpec() : BaseTest(true)
 	[Fact]
 	public void SimpleObject_Should_Be_Cloned()
 	{
-		var obj = new TestObject1 { Int = 42, Byte = 42, Short = 42, Long = 42, DateTime = new DateTime(2001, 01, 01), Char = 'X', Decimal = 1.2m, Double = 1.3, Float = 1.4f, String = "test1", UInt = 42, ULong = 42, UShort = 42, Bool = true, IntPtr = new nint(42), UIntPtr = new nuint(42), Enum = AttributeTargets.Delegate };
-
-		var cloned = obj.ShallowClone();
-		Assert.Equal(42, cloned.Byte);
-		Assert.Equal(42, cloned.Short);
-		Assert.Equal(42, cloned.UShort);
-		Assert.Equal(42, cloned.Int);
-		Assert.Equal(42u, cloned.UInt);
-		Assert.Equal(42, cloned.Long);
-		Assert.Equal(42ul, cloned.ULong);
-		Assert.Equal(1.2m, cloned.Decimal);
-		Assert.Equal(1.3, cloned.Double);
-		Assert.Equal(1.4f, cloned.Float);
-		Assert.Equal('X', cloned.Char);
-		Assert.Equal("test1", cloned.String);
-		Assert.Equal(new DateTime(2001, 1, 1), cloned.DateTime);
-		Assert.True(cloned.Bool);
-		Assert.Equal(new nint(42), cloned.IntPtr);
-		Assert.Equal(new nuint(42), cloned.UIntPtr);
-		Assert.Equal(AttributeTargets.Delegate, cloned.Enum);
+		var cloned = TestObject1Sample.Create().ShallowClone();
+		TestObject1Sample.AssertMatches(cloned);
 	}
 
 	private class C1
@@ -49,19 +31,13 @@ public class ShallowClonerSpec() : BaseTest(true)
 		Assert.Equal(c1.X, clone.X);
 	}
 
-	private struct S1 : IDisposable, IEquatable<S1>
+	private record struct S1 : IDisposable
 	{
 		public int X;
 
 		public void Dispose()
 		{
 		}
-
-		public readonly bool Equals(S1 other) => EqualityComparer<int>.Default.Equals(X, other.X);
-
-		public override readonly bool Equals(object obj) => obj is S1 other && Equals(other);
-
-		public override readonly int GetHashCode() => EqualityComparer<int>.Default.GetHashCode(X);
 	}
 
 	[Fact]
