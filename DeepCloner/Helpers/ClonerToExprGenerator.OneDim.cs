@@ -27,16 +27,28 @@ internal static partial class ClonerToExprGenerator
 		return objTo;
 	}
 
-	internal static T[] Clone1DimArrayStructInternal<T>(T[] objFrom, T[] objTo, DeepCloneState state)
+	// shared start of the struct and class copies: null guard, copy length and loop registration
+	private static bool TryBeginOneDimCopy<T>(T[] objFrom, T[] objTo, DeepCloneState state, out int length)
 	{
 		// not null from called method, but will check it anyway
 		if (objFrom == null || objTo == null)
 		{
+			length = 0;
+			return false;
+		}
+
+		length = Math.Min(objFrom.Length, objTo.Length);
+		state.AddKnownRef(objFrom, objTo);
+		return true;
+	}
+
+	internal static T[] Clone1DimArrayStructInternal<T>(T[] objFrom, T[] objTo, DeepCloneState state)
+	{
+		if (!TryBeginOneDimCopy(objFrom, objTo, state, out var l))
+		{
 			return null;
 		}
 
-		var l = Math.Min(objFrom.Length, objTo.Length);
-		state.AddKnownRef(objFrom, objTo);
 		var cloner = DeepClonerGenerator.GetClonerForValueType<T>();
 		for (var i = 0; i < l; i++)
 		{
@@ -48,14 +60,11 @@ internal static partial class ClonerToExprGenerator
 
 	internal static T[] Clone1DimArrayClassInternal<T>(T[] objFrom, T[] objTo, DeepCloneState state)
 	{
-		// not null from called method, but will check it anyway
-		if (objFrom == null || objTo == null)
+		if (!TryBeginOneDimCopy(objFrom, objTo, state, out var l))
 		{
 			return null;
 		}
 
-		var l = Math.Min(objFrom.Length, objTo.Length);
-		state.AddKnownRef(objFrom, objTo);
 		for (var i = 0; i < l; i++)
 		{
 			objTo[i] = (T)DeepClonerGenerator.CloneClassInternal(objFrom[i], state);

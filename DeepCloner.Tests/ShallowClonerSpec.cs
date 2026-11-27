@@ -64,12 +64,21 @@ public class ShallowClonerSpec() : BaseTest(true)
 		Assert.Equal(1, clone.X);
 	}
 
-	[Fact]
-	public void Struct_As_Interface_Should_Be_Cloned()
+	// A boxed struct whose counter has already been advanced twice.
+	private static IDoable CreateAdvancedDoable()
 	{
 		var c1 = new DoableStruct1() as IDoable;
 		Assert.Equal(1, c1.Do());
 		Assert.Equal(2, c1.Do());
+		return c1;
+	}
+
+	private static Tuple<IDoable> CreateAdvancedTuple() => new(CreateAdvancedDoable());
+
+	[Fact]
+	public void Struct_As_Interface_Should_Be_Cloned()
+	{
+		var c1 = CreateAdvancedDoable();
 		var clone = c1.ShallowClone();
 		Assert.Equal(3, c1.Do());
 		Assert.Equal(3, clone.Do());
@@ -78,9 +87,7 @@ public class ShallowClonerSpec() : BaseTest(true)
 	[Fact]
 	public void Struct_As_Interface_Should_Be_Cloned_For_DeepClone_Too()
 	{
-		var c1 = new DoableStruct1() as IDoable;
-		Assert.Equal(1, c1.Do());
-		Assert.Equal(2, c1.Do());
+		var c1 = CreateAdvancedDoable();
 		var clone = c1.DeepClone();
 		Assert.Equal(3, c1.Do());
 		Assert.Equal(3, clone.Do());
@@ -89,10 +96,7 @@ public class ShallowClonerSpec() : BaseTest(true)
 	[Fact]
 	public void Struct_As_Interface_Should_Be_Cloned_In_Object()
 	{
-		var c1 = new DoableStruct1() as IDoable;
-		var t = new Tuple<IDoable>(c1);
-		Assert.Equal(1, t.Item1.Do());
-		Assert.Equal(2, t.Item1.Do());
+		var t = CreateAdvancedTuple();
 		var clone = t.ShallowClone();
 		Assert.Equal(3, t.Item1.Do());
 		// shallow clone do not copy object
@@ -102,10 +106,7 @@ public class ShallowClonerSpec() : BaseTest(true)
 	[Fact]
 	public void Struct_As_Interface_Should_Be_Cloned_For_DeepClone_Too_In_Object()
 	{
-		var c1 = new DoableStruct1() as IDoable;
-		var t = new Tuple<IDoable>(c1);
-		Assert.Equal(1, t.Item1.Do());
-		Assert.Equal(2, t.Item1.Do());
+		var t = CreateAdvancedTuple();
 		var clone = t.DeepClone();
 		Assert.Equal(3, t.Item1.Do());
 		// deep clone copy object
