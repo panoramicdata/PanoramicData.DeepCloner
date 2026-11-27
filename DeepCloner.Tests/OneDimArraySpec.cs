@@ -41,6 +41,9 @@ public class OneDimArraySpec() : BaseTest(true)
 
 	public class Dog(string name) : Animal(name);
 
+	// A Dog[] seen as an Animal[]: the runtime element type is narrower than the static one.
+	private static Animal[] CreateCovariantArray() => (Animal[])Array.CreateInstance(typeof(Dog), 2);
+
 	private static T[] Copy<T>(T[] from, T[] to, bool isDeep)
 	{
 		if (isDeep)
@@ -171,7 +174,8 @@ public class OneDimArraySpec() : BaseTest(true)
 	[Fact]
 	public void DeepClone_Covariant_Array_Keeps_Its_Runtime_Type()
 	{
-		Animal[] source = new Dog[] { new Dog("rex"), null };
+		var source = CreateCovariantArray();
+		source[0] = new Dog("rex");
 		var clone = source.DeepClone();
 
 		Assert.IsType<Dog[]>(clone);
@@ -322,7 +326,7 @@ public class OneDimArraySpec() : BaseTest(true)
 	public void DeepCloneTo_Covariant_Array_Is_Filled_With_Cloned_Elements()
 	{
 		Animal[] from = [new Dog("rex"), null];
-		Animal[] to = new Dog[2];
+		var to = CreateCovariantArray();
 		from.DeepCloneTo(to);
 
 		Assert.IsType<Dog>(to[0]);
