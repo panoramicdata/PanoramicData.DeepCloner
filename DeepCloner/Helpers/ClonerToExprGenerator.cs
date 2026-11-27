@@ -101,19 +101,7 @@ internal static partial class ClonerToExprGenerator
 			return Expression.Assign(Expression.Field(toLocal, fieldInfo), Expression.Field(fromLocal, fieldInfo));
 		}
 
-		var methodInfo = fieldInfo.FieldType.IsValueType()
-			? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")
-				.MakeGenericMethod(fieldInfo.FieldType)
-			: typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneClassInternal");
-
-		var get = Expression.Field(fromLocal, fieldInfo);
-
-		// toLocal.Field = Clone...Internal(fromLocal.Field)
-		var call = (Expression)Expression.Call(methodInfo, get, state);
-		if (!fieldInfo.FieldType.IsValueType())
-		{
-			call = Expression.Convert(call, fieldInfo.FieldType);
-		}
+		var call = DeepClonerExprGenerator.CreateFieldCloneCall(fieldInfo, fromLocal, state);
 
 		// should handle specially
 		// todo: think about optimization, but it rare case

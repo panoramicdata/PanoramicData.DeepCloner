@@ -28,20 +28,8 @@ internal static partial class DeepClonerGenerator
 
 	private static object CloneClassRoot(object obj)
 	{
-		if (obj == null)
-		{
-			return null;
-		}
-
-		var cloner = (Func<object, DeepCloneState, object>)DeepClonerCache.GetOrAddClass(obj.GetType(), t => GenerateCloner(t, true));
-
-		// null -> should return same type
-		if (cloner == null)
-		{
-			return obj;
-		}
-
-		return cloner(obj, new DeepCloneState());
+		// a new state has no known references, so the loop check inside CloneClassInternal never matches
+		return CloneClassInternal(obj, new DeepCloneState());
 	}
 
 	internal static object CloneClassInternal(object obj, DeepCloneState state)

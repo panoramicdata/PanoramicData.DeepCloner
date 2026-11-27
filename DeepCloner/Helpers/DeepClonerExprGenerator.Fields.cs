@@ -74,19 +74,7 @@ internal static partial class DeepClonerExprGenerator
 			return;
 		}
 
-       var methodInfo = fieldInfo.FieldType.IsValueType()
-								? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")!
-										.MakeGenericMethod(fieldInfo.FieldType)
-								: typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneClassInternal")!;
-
-		var get = Expression.Field(fromLocal, fieldInfo);
-
-		// toLocal.Field = Clone...Internal(fromLocal.Field)
-		var call = (Expression)Expression.Call(methodInfo, get, state);
-		if (!fieldInfo.FieldType.IsValueType())
-		{
-			call = Expression.Convert(call, fieldInfo.FieldType);
-		}
+		var call = CreateFieldCloneCall(fieldInfo, fromLocal, state);
 
 		// should handle specially
 		// todo: think about optimization, but it rare case
@@ -119,6 +107,29 @@ internal static partial class DeepClonerExprGenerator
 		{
 			expressionList.Add(Expression.Assign(Expression.Field(toLocal, fieldInfo), call));
 		}
+	}
+
+	/// <summary>
+	/// Builds the expression that clones one field value: Clone...Internal(fromLocal.Field), converted back to
+	/// the field type for reference types. Shared by the DeepClone and the CloneTo generators.
+	/// </summary>
+	internal static Expression CreateFieldCloneCall(FieldInfo fieldInfo, Expression fromLocal, Expression state)
+	{
+		var methodInfo = fieldInfo.FieldType.IsValueType()
+			? typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneStructInternal")!
+				.MakeGenericMethod(fieldInfo.FieldType)
+			: typeof(DeepClonerGenerator).GetPrivateStaticMethod("CloneClassInternal")!;
+
+		var get = Expression.Field(fromLocal, fieldInfo);
+
+		// toLocal.Field = Clone...Internal(fromLocal.Field)
+		var call = (Expression)Expression.Call(methodInfo, get, state);
+		if (!fieldInfo.FieldType.IsValueType())
+		{
+			call = Expression.Convert(call, fieldInfo.FieldType);
+		}
+
+		return call;
 	}
 
 	/// <summary>
